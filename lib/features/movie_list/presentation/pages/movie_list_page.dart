@@ -5,6 +5,7 @@ import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
 import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
 import 'package:movie_app/features/movie_list/presentation/widgets/ranked_movie_card.dart';
+import 'package:movie_app/shared/theme/app_colors.dart';
 import '../cubit/movie_list_cubit.dart';
 
 class MovieListPage extends StatefulWidget {
@@ -34,7 +35,8 @@ class _MovieListPageState extends State<MovieListPage> {
     return BlocProvider.value(
       value: widget.cubit,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Movies')),
+        appBar: AppBar(title: const Text('Movies'),
+            backgroundColor: AppColors.colorSecondary),
         body: Column(
           children: [
             Padding(

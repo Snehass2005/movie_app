@@ -40,10 +40,11 @@ extension _EnvProperties on AppEnvironment {
   };
 
   static const _apiKeyMap = {
-    AppEnvironment.dev: 'your_dev_api_key',
-    AppEnvironment.stage: 'your_stage_api_key',
-    AppEnvironment.prod: 'your_prod_api_key',
+    AppEnvironment.dev: 'fba622c4',
+    AppEnvironment.stage: 'fba622c4',
+    AppEnvironment.prod: 'fba622c4',
   };
+
 
   static const _envs = {
     AppEnvironment.dev: 'dev',

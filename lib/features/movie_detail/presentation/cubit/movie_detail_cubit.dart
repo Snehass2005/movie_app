@@ -1,7 +1,7 @@
-import 'dart:developer';
+
 import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
-import 'package:get_it/get_it.dart';
+
 
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
 import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';

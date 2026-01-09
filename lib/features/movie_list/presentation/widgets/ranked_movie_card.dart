@@ -38,7 +38,7 @@ class RankedMovieCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      movie.poster ?? '',
+                      movie.poster ,
                       width: 80,
                       height: 120,
                       fit: BoxFit.cover,
@@ -53,7 +53,7 @@ class RankedMovieCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          movie.title ?? 'Untitled',
+                          movie.title,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -61,17 +61,17 @@ class RankedMovieCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Rating: ${movie.imdbRating ?? 'N/A'}',
+                          'Rating: ${movie.imdbRating }',
                           style: const TextStyle(fontSize: 14),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Country / Format: ${movie.country ?? 'N/A'} / ${movie.type ?? 'N/A'}',
+                          'Country / Format: ${movie.country} / ${movie.type}',
                           style: const TextStyle(fontSize: 13),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Director: ${movie.director ?? 'N/A'}',
+                          'Director: ${movie.director }',
                           style: const TextStyle(fontSize: 13),
                         ),
                       ],

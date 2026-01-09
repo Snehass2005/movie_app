@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movie_app/core/exceptions/http_exception.dart';
-import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/features/movie_list/domain/usecases/movie_search_usecases.dart';
 import '../../data/models/movie_list_dto.dart';
 

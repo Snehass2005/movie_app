@@ -26,7 +26,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RoutesName.movieDetail, // e.g. '/movie-details'
       builder: (BuildContext context, GoRouterState state) {
-        final imdbID = state.extra as String; // ✅ pass imdbID via extra
+        final imdbID = state.extra as String;
         return MovieDetailPage(imdbID: imdbID);
       },
     ),

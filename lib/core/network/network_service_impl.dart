@@ -1,5 +1,3 @@
-
-
 import 'package:movie_app/core/network/api_client.dart';
 import 'package:movie_app/core/network/connection/connection_listener.dart';
 

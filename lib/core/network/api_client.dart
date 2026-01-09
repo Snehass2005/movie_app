@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../exceptions/http_exception.dart'; // contains AppException now
+import '../exceptions/http_exception.dart'; // contains AppException
+
 
 class ApiClient {
   final String baseUrl;
@@ -16,7 +17,7 @@ class ApiClient {
   Future<Map<String, dynamic>> get(String path, Map<String, String> query) async {
     final uri = Uri.parse('$baseUrl$path').replace(
       queryParameters: {
-        'apikey': apiKey, // ✅ use injected apiKey
+        'apikey': apiKey, // ✅ always include API key
         ...query,
       },
     );
@@ -31,14 +32,24 @@ class ApiClient {
       );
     }
 
-    final data = json.decode(res.body) as Map<String, dynamic>;
-    if (data['Response'] == 'False') {
+    try {
+      final data = json.decode(res.body) as Map<String, dynamic>;
+
+      if (data['Response'] == 'False') {
+        throw AppException(
+          message: data['Error'] ?? 'Unknown API error',
+          statusCode: 400,
+          identifier: uri.toString(),
+        );
+      }
+
+      return data;
+    } catch (e) {
       throw AppException(
-        message: data['Error'] ?? 'Unknown API error',
-        statusCode: 400,
+        message: 'Failed to parse response',
+        statusCode: res.statusCode,
         identifier: uri.toString(),
       );
     }
-    return data;
   }
 }

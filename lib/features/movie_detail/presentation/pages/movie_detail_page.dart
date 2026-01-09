@@ -1,9 +1,7 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-import 'package:movie_app/core/dependency_injection/injector.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
 import 'package:movie_app/features/movie_detail/presentation/cubit/movie_detail_cubit.dart';
 import 'package:movie_app/features/movie_list/domain/usecases/movie_search_usecases.dart';
@@ -23,13 +21,13 @@ class MovieDetailPage extends StatefulWidget {
 }
 
 class _MovieDetailPageState extends State<MovieDetailPage> {
-  late MovieDetailCubit _movieDetailCubit;
-  late MovieListCubit _movieListCubit;
+  late final MovieDetailCubit _movieDetailCubit;
+  late final MovieListCubit _movieListCubit;
 
   @override
   void initState() {
     super.initState();
-    _movieListCubit = MovieListCubit(GetIt.instance<SearchMoviesUseCase>());
+    _movieDetailCubit = MovieDetailCubit(GetIt.instance<GetMovieDetailUseCase>());
     _movieListCubit = MovieListCubit(GetIt.instance<SearchMoviesUseCase>());
     _movieDetailCubit.fetchDetail(widget.imdbID);
   }
@@ -57,7 +55,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               child: BlocConsumer<MovieDetailCubit, MovieDetailState>(
                 listener: (context, state) {
                   if (state is MovieDetailSuccess) {
-                    // ✅ Refresh MovieList after success
                     context.read<MovieListCubit>().loadMovies();
                   } else if (state.isError) {
                     _showErrorSnackBar(context, state.errorMessage);
@@ -99,6 +96,5 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         backgroundColor: AppColors.colorSecondary,
       ),
     );
-    log("ERROR ----- $message");
   }
 }

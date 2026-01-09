@@ -1,3 +1,4 @@
+import 'package:movie_app/core/constants/endpoints.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/core/network/api_client.dart';
@@ -17,7 +18,7 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
   @override
   Future<Either<AppException, List<MovieListDto>>> searchMovies(String query) async {
     try {
-      final data = await apiClient.get('', {'s': query});
+      final data = await apiClient.get(ApiEndpoint.searchMovies, {'s': query});
       final results = (data['Search'] as List<dynamic>?)
           ?.map((json) => MovieListDto.fromJson(json))
           .toList();

@@ -3,8 +3,7 @@ import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/core/network/api_client.dart';
 import '../models/movie_detail_dto.dart';
 
-/// Remote datasource for fetching movie details from OMDb API.
-/// Wraps responses in Either<AppException, MovieDetailDto>.
+
 abstract class MovieDetailRemoteDataSource {
   Future<Either<AppException, MovieDetailDto>> getMovieDetail(String imdbID);
 }
