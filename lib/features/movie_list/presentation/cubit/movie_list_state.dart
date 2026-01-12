@@ -1,12 +1,11 @@
 part of 'movie_list_cubit.dart';
 
-
 class MovieListState extends Equatable {
   final bool isLoading;
   final bool isError;
   final String errorMessage;
-  final List<MovieListDto> defaultMovies;
-  final List<MovieListDto> searchedMovies;
+  final List<Movie> defaultMovies;
+  final List<Movie> searchedMovies;
 
   const MovieListState({
     this.isLoading = false,
@@ -20,8 +19,8 @@ class MovieListState extends Equatable {
     bool? isLoading,
     bool? isError,
     String? errorMessage,
-    List<MovieListDto>? defaultMovies,
-    List<MovieListDto>? searchedMovies,
+    List<Movie>? defaultMovies,
+    List<Movie>? searchedMovies,
   }) {
     return MovieListState(
       isLoading: isLoading ?? this.isLoading,
@@ -46,7 +45,7 @@ class MovieListLoading extends MovieListState {
 }
 
 class MovieListSuccess extends MovieListState {
-  const MovieListSuccess(List<MovieListDto> defaultMovies, List<MovieListDto> searchedMovies)
+  const MovieListSuccess(List<Movie> defaultMovies, List<Movie> searchedMovies)
       : super(defaultMovies: defaultMovies, searchedMovies: searchedMovies);
 }
 

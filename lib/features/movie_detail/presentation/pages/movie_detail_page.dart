@@ -42,7 +42,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       child: Scaffold(
         backgroundColor: AppColors.colorSecondary,
         appBar: AppBar(
-          title: const Text('Movie Detail', style: AppTextStyles.openSansBold20),
+          title: Text('Movie Detail', style: AppTextStyles.openSansBold20),
           centerTitle: true,
           backgroundColor: AppColors.colorSecondary,
           elevation: Dimens.elevation_2,
@@ -76,7 +76,10 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                       ),
                     );
                   } else if (state.isError) {
-                    return Center(child: Text(state.errorMessage));
+                    return Center(
+                      child: Text(state.errorMessage,
+                          style: AppTextStyles.openSansRegular14),
+                    );
                   } else {
                     return const SizedBox.shrink();
                   }
@@ -92,7 +95,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   void _showErrorSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(message, style: AppTextStyles.openSansRegular14),
         backgroundColor: AppColors.colorSecondary,
       ),
     );

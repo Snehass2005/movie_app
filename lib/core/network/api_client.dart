@@ -1,54 +1,70 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../exceptions/http_exception.dart'; // contains AppException
-
+import 'package:dio/dio.dart';
+import 'package:movie_app/core/exceptions/http_exception.dart';
 
 class ApiClient {
-  final String baseUrl;
+  final Dio _dio;
   final String apiKey;
-  final http.Client _client;
 
   ApiClient({
-    required this.baseUrl,
+    String baseUrl = "https://www.omdbapi.com/",
     required this.apiKey,
-    http.Client? client,
-  }) : _client = client ?? http.Client();
-
-  Future<Map<String, dynamic>> get(String path, Map<String, String> query) async {
-    final uri = Uri.parse('$baseUrl$path').replace(
-      queryParameters: {
-        'apikey': apiKey, // ✅ always include API key
-        ...query,
-      },
+  }) : _dio = Dio(
+    BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  ) {
+    // ✅ Add logging interceptor
+    _dio.interceptors.add(
+      LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+      ),
     );
+  }
 
-    final res = await _client.get(uri);
-
-    if (res.statusCode != 200) {
-      throw AppException(
-        message: 'Network error',
-        statusCode: res.statusCode,
-        identifier: uri.toString(),
-      );
-    }
-
+  /// Generic GET request with unified error handling
+  Future<Map<String, dynamic>> get(Map<String, String> queryParams) async {
     try {
-      final data = json.decode(res.body) as Map<String, dynamic>;
+      final response = await _dio.get(
+        '',
+        queryParameters: {
+          'apikey': apiKey, // ✅ always include API key
+          ...queryParams,
+        },
+      );
 
-      if (data['Response'] == 'False') {
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+
+        if (data['Response'] == 'False') {
+          throw AppException(
+            message: data['Error'] ?? 'Unknown API error',
+            statusCode: 400,
+            identifier: 'ApiClient.get',
+          );
+        }
+
+        return data;
+      } else {
         throw AppException(
-          message: data['Error'] ?? 'Unknown API error',
-          statusCode: 400,
-          identifier: uri.toString(),
+          message: 'Network error',
+          statusCode: response.statusCode ?? -1,
+          identifier: 'ApiClient.get',
         );
       }
-
-      return data;
+    } on DioException catch (e) {
+      throw AppException(
+        message: e.message ?? 'Unexpected Dio error',
+        statusCode: e.response?.statusCode ?? -1,
+        identifier: 'ApiClient.get',
+      );
     } catch (e) {
       throw AppException(
-        message: 'Failed to parse response',
-        statusCode: res.statusCode,
-        identifier: uri.toString(),
+        message: 'Unexpected error',
+        statusCode: -1,
+        identifier: 'ApiClient.get\n${e.toString()}',
       );
     }
   }

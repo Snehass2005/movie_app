@@ -1,12 +1,16 @@
-// A generic Either type to represent success (Right) or failure (Left).
 
+/// A generic Either type to represent success (Right) or failure (Left).
 abstract class Either<L, R> {
   const Either();
 
+  /// Fold allows you to handle both cases in one go.
   T fold<T>(T Function(L l) leftFn, T Function(R r) rightFn);
 
-  bool isLeft();
-  bool isRight();
+  bool get isLeft;
+  bool get isRight;
+
+  L? get leftOrNull;
+  R? get rightOrNull;
 }
 
 class Left<L, R> extends Either<L, R> {
@@ -20,10 +24,16 @@ class Left<L, R> extends Either<L, R> {
   }
 
   @override
-  bool isLeft() => true;
+  bool get isLeft => true;
 
   @override
-  bool isRight() => false;
+  bool get isRight => false;
+
+  @override
+  L get leftOrNull => value;
+
+  @override
+  R? get rightOrNull => null;
 }
 
 class Right<L, R> extends Either<L, R> {
@@ -37,8 +47,14 @@ class Right<L, R> extends Either<L, R> {
   }
 
   @override
-  bool isLeft() => false;
+  bool get isLeft => false;
 
   @override
-  bool isRight() => true;
+  bool get isRight => true;
+
+  @override
+  L? get leftOrNull => null;
+
+  @override
+  R get rightOrNull => value;
 }

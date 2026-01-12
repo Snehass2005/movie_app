@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
 import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
-import 'package:movie_app/features/movie_detail/presentation/pages/movie_detail_page.dart'; // ✅ import your detail page
+import 'package:movie_app/lang/app_localizations.dart';
 
 class RankedMovieCard extends StatelessWidget {
   final MovieDetailDto movie;
@@ -16,13 +18,7 @@ class RankedMovieCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // ✅ Navigate to detail page when tapped
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MovieDetailPage(imdbID: movie.imdbID),
-          ),
-        );
+        context.go('/detail/${movie.imdbID}');
       },
       child: Stack(
         children: [
@@ -34,20 +30,23 @@ class RankedMovieCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ✅ Poster image with fallback
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      movie.poster ,
+                    child: CachedNetworkImage(
+                      imageUrl: movie.poster,
                       width: 80,
                       height: 120,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
+                      placeholder: (context, url) => const SizedBox(
+                        width: 80,
+                        height: 120,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                      errorWidget: (context, url, error) =>
                       const Icon(Icons.broken_image, size: 80),
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // ✅ Movie details
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,17 +60,17 @@ class RankedMovieCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Rating: ${movie.imdbRating }',
+                          '${AppLocalizations.t('rating')}: ${movie.imdbRating}',
                           style: const TextStyle(fontSize: 14),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Country / Format: ${movie.country} / ${movie.type}',
+                          '${AppLocalizations.t('country_format')}: ${movie.country} / ${movie.type}',
                           style: const TextStyle(fontSize: 13),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Director: ${movie.director }',
+                          '${AppLocalizations.t('director')}: ${movie.director}',
                           style: const TextStyle(fontSize: 13),
                         ),
                       ],
@@ -81,7 +80,6 @@ class RankedMovieCard extends StatelessWidget {
               ),
             ),
           ),
-          // ✅ Rank badge for top 3
           if (rank <= 3)
             Positioned(
               top: 0,

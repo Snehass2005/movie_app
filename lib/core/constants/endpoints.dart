@@ -1,8 +1,6 @@
-
 class ApiEndpoint {
-  /// Movie search endpoints
-  static const String searchMovies = '?s=';       // Search by title
-  static const String movieDetail = '?i=';        // Get details by IMDb ID
-  static const String movieByTitle = '?t=';       // Get details by exact title
-
+  static const String search = 's';   // search by title
+  static const String byId = 'i';     // movie by IMDb ID
+  static const String byTitle = 't';  // movie by exact title
+  static const String page = 'page';  // pagination
 }

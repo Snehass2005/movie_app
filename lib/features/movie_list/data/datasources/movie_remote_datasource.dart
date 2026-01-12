@@ -2,12 +2,11 @@ import 'package:movie_app/core/constants/endpoints.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/core/network/api_client.dart';
+import 'package:movie_app/core/network/model/safe_api_call.dart';
 import '../models/movie_list_dto.dart';
 
-/// Remote datasource for fetching movie lists from OMDb API.
-/// Wraps responses in Either<AppException, List<MovieListDto>>.
 abstract class MovieRemoteDataSource {
-  Future<Either<AppException, List<MovieListDto>>> searchMovies(String query);
+  Future<Either<AppException, List<MovieListDto>>> searchMovies(String query, {int page});
 }
 
 class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
@@ -16,22 +15,19 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
   MovieRemoteDataSourceImpl(this.apiClient);
 
   @override
-  Future<Either<AppException, List<MovieListDto>>> searchMovies(String query) async {
-    try {
-      final data = await apiClient.get(ApiEndpoint.searchMovies, {'s': query});
+  Future<Either<AppException, List<MovieListDto>>> searchMovies(
+      String query, {int page = 1}) {
+    return safeApiCall(() async {
+      final data = await apiClient.get({
+        ApiEndpoint.search: query,
+        ApiEndpoint.page: '$page',
+      });
+
       final results = (data['Search'] as List<dynamic>?)
           ?.map((json) => MovieListDto.fromJson(json))
           .toList();
 
-      return Right(results ?? []);
-    } catch (e) {
-      return Left(
-        AppException(
-          message: 'Failed to fetch movies',
-          statusCode: 1,
-          identifier: '${e.toString()}\nMovieRemoteDataSource.searchMovies',
-        ),
-      );
-    }
+      return results ?? [];
+    }, identifier: 'MovieRemoteDataSource.searchMovies');
   }
 }

@@ -10,8 +10,13 @@ class NetworkServiceImpl {
     required this.connectionListener,
   });
 
-  Future<Map<String, dynamic>> safeGet(String path, Map<String, String> query) async {
-    // You can add retry, caching, or offline fallback here
-    return await apiClient.get(path, query);
+  Future<Map<String, dynamic>> safeGet(Map<String, String> query) async {
+    // ✅ Use checkConnection() instead of isConnected()
+    final connected = await connectionListener.checkConnection();
+    if (!connected) {
+      throw Exception('No internet connection');
+    }
+
+    return await apiClient.get(query);
   }
 }
