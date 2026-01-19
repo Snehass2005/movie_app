@@ -1,10 +1,10 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
+import 'package:movie_app/features/movie_detail/domain/entities/movie_detail.dart';
 
 
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
-import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
 
 part 'movie_detail_state.dart';
 

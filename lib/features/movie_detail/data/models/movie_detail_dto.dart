@@ -1,3 +1,5 @@
+import '../../domain/entities/movie_detail.dart';
+
 class MovieDetailDto {
   final String title;
   final String year;
@@ -17,7 +19,8 @@ class MovieDetailDto {
   final String imdbID;
   final String type;
 
-  MovieDetailDto({
+  // ✅ Proper unnamed constructor
+  const MovieDetailDto({
     required this.title,
     required this.year,
     required this.rated,
@@ -58,6 +61,29 @@ class MovieDetailDto {
       imdbRating: json['imdbRating'] ?? 'N/A',
       imdbID: json['imdbID'] ?? '',
       type: json['Type'] ?? '',
+    );
+  }
+
+  /// ✅ Map DTO → Entity
+  MovieDetail toEntity() {
+    return MovieDetail(
+      imdbID: imdbID,
+      title: title,
+      year: year,
+      rated: rated,
+      released: released,
+      runtime: runtime,
+      genre: genre,
+      director: director,
+      writer: writer,
+      actors: actors,
+      plot: plot,
+      language: language,
+      country: country,
+      awards: awards,
+      posterUrl: poster,
+      imdbRating: imdbRating,
+      type: type,
     );
   }
 }

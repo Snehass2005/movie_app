@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
-import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
-import 'package:movie_app/lang/app_localizations.dart';
+import 'package:get/get.dart';
+import 'package:movie_app/shared/config/dimens.dart';
+import 'package:movie_app/shared/theme/app_colors.dart';
+import 'package:movie_app/shared/theme/text_styles.dart';
+import 'package:movie_app/features/movie_detail/domain/entities/movie_detail.dart';
 
 class RankedMovieCard extends StatelessWidget {
-  final MovieDetailDto movie;
+  final MovieDetail movie;
   final int rank;
 
   const RankedMovieCard({
@@ -18,61 +21,55 @@ class RankedMovieCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.go('/detail/${movie.imdbID}');
+        context.goNamed(
+          'detail',
+          pathParameters: {'imdbID': movie.imdbID},
+        );
       },
       child: Stack(
         children: [
           Card(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            elevation: 4,
+            margin: const EdgeInsets.symmetric(
+              horizontal: Dimens.standard_12,
+              vertical: Dimens.standard_8,
+            ),
+            elevation: Dimens.elevation_4,
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(Dimens.standard_12),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(Dimens.standard_8),
                     child: CachedNetworkImage(
-                      imageUrl: movie.poster,
-                      width: 80,
-                      height: 120,
+                      imageUrl: movie.posterUrl,
+                      width: Dimens.standard_80,   // add to Dimens
+                      height: Dimens.standard_120, // add to Dimens
                       fit: BoxFit.cover,
                       placeholder: (context, url) => const SizedBox(
-                        width: 80,
-                        height: 120,
+                        width: Dimens.standard_80,
+                        height: Dimens.standard_120,
                         child: Center(child: CircularProgressIndicator()),
                       ),
                       errorWidget: (context, url, error) =>
-                      const Icon(Icons.broken_image, size: 80),
+                      const Icon(Icons.broken_image, size: Dimens.standard_80),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: Dimens.standard_12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          movie.title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${AppLocalizations.t('rating')}: ${movie.imdbRating}',
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${AppLocalizations.t('country_format')}: ${movie.country} / ${movie.type}',
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${AppLocalizations.t('director')}: ${movie.director}',
-                          style: const TextStyle(fontSize: 13),
-                        ),
+                        Text(movie.title, style: AppTextStyles.openSansBold16),
+                        const SizedBox(height: Dimens.standard_4),
+                        Text('${'rating'.tr}: ${movie.imdbRating}',
+                            style: AppTextStyles.openSansRegular14),
+                        const SizedBox(height: Dimens.standard_4),
+                        Text('${'country_format'.tr}: ${movie.country} / ${movie.type}',
+                            style: AppTextStyles.openSansRegular12),
+                        const SizedBox(height: Dimens.standard_4),
+                        Text('${'director'.tr}: ${movie.director}',
+                            style: AppTextStyles.openSansRegular12),
                       ],
                     ),
                   ),
@@ -85,14 +82,12 @@ class RankedMovieCard extends StatelessWidget {
               top: 0,
               left: 0,
               child: CircleAvatar(
-                backgroundColor: Colors.blue,
-                radius: 12,
+                backgroundColor: AppColors.colorPrimary,
+                radius: Dimens.standard_12,
                 child: Text(
                   '$rank',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                  style: AppTextStyles.openSansBold12.copyWith(
+                    color: AppColors.colorWhite,
                   ),
                 ),
               ),

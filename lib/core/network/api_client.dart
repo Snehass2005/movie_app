@@ -1,21 +1,19 @@
 import 'package:dio/dio.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
-
+import 'package:movie_app/main/app_env.dart';
 class ApiClient {
   final Dio _dio;
   final String apiKey;
 
   ApiClient({
-    String baseUrl = "https://www.omdbapi.com/",
     required this.apiKey,
   }) : _dio = Dio(
     BaseOptions(
-      baseUrl: baseUrl,
+      baseUrl: EnvInfo.baseUrl,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
     ),
   ) {
-    // ✅ Add logging interceptor
     _dio.interceptors.add(
       LogInterceptor(
         requestBody: true,
@@ -24,13 +22,12 @@ class ApiClient {
     );
   }
 
-  /// Generic GET request with unified error handling
   Future<Map<String, dynamic>> get(Map<String, String> queryParams) async {
     try {
       final response = await _dio.get(
         '',
         queryParameters: {
-          'apikey': apiKey, // ✅ always include API key
+          'apikey': apiKey,
           ...queryParams,
         },
       );

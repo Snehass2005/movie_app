@@ -1,6 +1,7 @@
 import 'package:movie_app/core/network/model/either.dart';
-import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
+
+import '../network/model/response.dart';
 
 /// Base application exception class
 class AppException implements Exception {
@@ -8,11 +9,30 @@ class AppException implements Exception {
   final int statusCode;
   final String identifier;
 
+  /// General constructor
   AppException({
     required this.message,
     required this.statusCode,
     required this.identifier,
   });
+
+  /// Named constructor for network errors
+  AppException.network(String message)
+      : message = 'Network Error: $message',
+        statusCode = -1,
+        identifier = 'network';
+
+  /// Named constructor for server errors
+  AppException.server(int code, String message)
+      : message = message,
+        statusCode = code,
+        identifier = 'server';
+
+  /// Named constructor for unauthorized errors
+  AppException.unauthorized(String message)
+      : message = message,
+        statusCode = 401,
+        identifier = 'unauthorized';
 
   @override
   String toString() {

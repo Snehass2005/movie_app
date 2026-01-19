@@ -1,23 +1,25 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_pretty_dio_logger/flutter_pretty_dio_logger.dart';
-import 'package:movie_app/core/exceptions/exception_handler_mixin.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/main/app_env.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:flutter/foundation.dart';
+import 'package:flutter_pretty_dio_logger/flutter_pretty_dio_logger.dart';
 
 import 'model/either.dart';
 import 'model/response.dart';
-
+import 'network_service.dart';
 
 /// DioNetworkService
 ///
 /// Concrete implementation of [NetworkService] using Dio.
-/// Handles base URL, headers, logging, and error handling.
-class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
-  late final Dio _dio;
+/// - Sets up Dio with base URL and headers.
+/// - Adds PrettyDioLogger in debug mode.
+/// - Wraps Dio responses into our custom [Response] model.
+/// - Handles errors with try/catch and returns Either<AppException, Response>.
+class DioNetworkService extends NetworkService {
+  late final dio.Dio _dio;
 
   DioNetworkService() {
-    _dio = Dio();
+    _dio = dio.Dio();
     _dio.options = dioBaseOptions;
 
     if (kDebugMode) {
@@ -26,24 +28,22 @@ class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
           queryParameters: true,
           requestHeader: true,
           requestBody: true,
-          responseBody: true,
+          responseBody: false,
           error: true,
           showProcessingTime: true,
           canShowLog: kDebugMode,
         ),
       );
     }
-
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onResponse: (res, handler) => handler.next(res),
-      ),
-    );
   }
 
   /// Base Dio configuration
-  BaseOptions get dioBaseOptions =>
-      BaseOptions(baseUrl: baseUrl, headers: headers);
+  dio.BaseOptions get dioBaseOptions => dio.BaseOptions(
+    baseUrl: baseUrl, // ✅ must be https://www.omdbapi.com/
+    headers: headers,
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 10),
+  );
 
   @override
   String get baseUrl => EnvInfo.baseUrl;
@@ -65,10 +65,17 @@ class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
       String endpoint, {
         Map<String, dynamic>? queryParameters,
       }) async {
-    return handleException(
-          () => _dio.get(endpoint, queryParameters: queryParameters),
-      endpoint: endpoint,
-    ).then((res) => res.map((r) => Response.fromJson(r.data)));
+    try {
+      final dio.Response res =
+      await _dio.get(endpoint.isEmpty ? '' : endpoint, queryParameters: queryParameters);
+      return Right(Response(
+        statusCode: res.statusCode ?? 0,
+        statusMessage: res.statusMessage,
+        data: res.data,
+      ));
+    } catch (e) {
+      return Left(AppException.network(e.toString()));
+    }
   }
 
   @override
@@ -76,10 +83,16 @@ class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
       String endpoint, {
         Map<String, dynamic>? data,
       }) async {
-    return handleException(
-          () => _dio.post(endpoint, data: data),
-      endpoint: endpoint,
-    ).then((res) => res.map((r) => Response.fromJson(r.data)));
+    try {
+      final dio.Response res = await _dio.post(endpoint, data: data);
+      return Right(Response(
+        statusCode: res.statusCode ?? 0,
+        statusMessage: res.statusMessage,
+        data: res.data,
+      ));
+    } catch (e) {
+      return Left(AppException.network(e.toString()));
+    }
   }
 
   @override
@@ -87,10 +100,16 @@ class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
       String endpoint, {
         Map<String, dynamic>? data,
       }) async {
-    return handleException(
-          () => _dio.put(endpoint, data: data),
-      endpoint: endpoint,
-    ).then((res) => res.map((r) => Response.fromJson(r.data)));
+    try {
+      final dio.Response res = await _dio.put(endpoint, data: data);
+      return Right(Response(
+        statusCode: res.statusCode ?? 0,
+        statusMessage: res.statusMessage,
+        data: res.data,
+      ));
+    } catch (e) {
+      return Left(AppException.network(e.toString()));
+    }
   }
 
   @override
@@ -98,20 +117,33 @@ class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
       String endpoint, {
         Map<String, dynamic>? queryParameters,
       }) async {
-    return handleException(
-          () => _dio.delete(endpoint, queryParameters: queryParameters),
-      endpoint: endpoint,
-    ).then((res) => res.map((r) => Response.fromJson(r.data)));
+    try {
+      final dio.Response res =
+      await _dio.delete(endpoint, queryParameters: queryParameters);
+      return Right(Response(
+        statusCode: res.statusCode ?? 0,
+        statusMessage: res.statusMessage,
+        data: res.data,
+      ));
+    } catch (e) {
+      return Left(AppException.network(e.toString()));
+    }
   }
 
   /// Optional: Upload files using FormData
   Future<Either<AppException, Response>> uploadFile(
       String endpoint,
-      FormData formData,
+      dio.FormData formData,
       ) async {
-    return handleException(
-          () => _dio.post(endpoint, data: formData),
-      endpoint: endpoint,
-    ).then((res) => res.map((r) => Response.fromJson(r.data)));
+    try {
+      final dio.Response res = await _dio.post(endpoint, data: formData);
+      return Right(Response(
+        statusCode: res.statusCode ?? 0,
+        statusMessage: res.statusMessage,
+        data: res.data,
+      ));
+    } catch (e) {
+      return Left(AppException.network(e.toString()));
+    }
   }
 }

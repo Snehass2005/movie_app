@@ -1,49 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:movie_app/lang/app_localizations.dart';
-import '../../data/models/movie_detail_dto.dart';
+import 'package:get/get.dart';
+import 'package:movie_app/shared/config/dimens.dart';
+import 'package:movie_app/shared/theme/text_styles.dart';
+import 'package:movie_app/features/movie_detail/domain/entities/movie_detail.dart';
 
 class MovieDetailView extends StatelessWidget {
-  final MovieDetailDto? detail;
+  final MovieDetail detail;
 
-  const MovieDetailView({super.key, this.detail});
+  const MovieDetailView({super.key, required this.detail});
 
   @override
   Widget build(BuildContext context) {
-    if (detail == null) {
-      return Center(child: Text(AppLocalizations.t('no_movies'))); // ✅ localized
-    }
-
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Dimens.spacing_16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
             child: CachedNetworkImage(
-              imageUrl: detail!.poster.isNotEmpty
-                  ? detail!.poster
-                  : 'https://via.placeholder.com/150',
-              height: 250,
+              imageUrl: detail.posterUrl.isNotEmpty
+                  ? detail.posterUrl
+                  : 'https://via.placeholder.com/150?text=No+Image',
+              height: Dimens.imageLarge,
               fit: BoxFit.cover,
-              placeholder: (context, url) => const SizedBox(
-                height: 250,
-                child: Center(child: CircularProgressIndicator()),
+              placeholder: (context, url) => SizedBox(
+                height: Dimens.imageLarge,
+                child: const Center(child: CircularProgressIndicator()),
               ),
               errorWidget: (context, url, error) =>
-              const Icon(Icons.broken_image, size: 100),
+              Icon(Icons.broken_image, size: Dimens.iconLarge),
             ),
           ),
-          const SizedBox(height: 16),
-          Text(detail!.title, style: Theme.of(context).textTheme.titleLarge),
-          Text('${detail!.year} • ${detail!.runtime} • ${detail!.genre}'),
-          const SizedBox(height: 8),
-          Text('${AppLocalizations.t('director')}: ${detail!.director}'),
-          Text('${AppLocalizations.t('actors')}: ${detail!.actors}'),
-          const SizedBox(height: 16),
-          Text(detail!.plot),
-          const SizedBox(height: 16),
-          Text('${AppLocalizations.t('rating')}: ${detail!.imdbRating}'),
+          const SizedBox(height: Dimens.spacing_16),
+          Text(detail.title, style: Theme.of(context).textTheme.titleLarge),
+          Text('${detail.year} • ${detail.runtime} • ${detail.genre}',
+              style: AppTextStyles.openSansRegular14),
+          const SizedBox(height: Dimens.spacing_8),
+          Text('${'director'.tr}: ${detail.director}',
+              style: AppTextStyles.openSansRegular14),
+          Text('${'actors'.tr}: ${detail.actors}',
+              style: AppTextStyles.openSansRegular14),
+          const SizedBox(height: Dimens.spacing_16),
+          Text(detail.plot, style: AppTextStyles.openSansRegular14),
+          const SizedBox(height: Dimens.spacing_16),
+          Text('${'rating'.tr}: ${detail.imdbRating}',
+              style: AppTextStyles.openSansRegular14),
         ],
       ),
     );

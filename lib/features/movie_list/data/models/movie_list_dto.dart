@@ -1,4 +1,5 @@
 import '../../../../core/constants/app_constants.dart';
+import '../../domain/entities/movie.dart';
 
 class MovieListDto {
   final String title;
@@ -26,6 +27,17 @@ class MovieListDto {
       imdbID: json['imdbID'] ?? '',
       type: json['Type'] ?? '',
       poster: posterUrl,
+    );
+  }
+
+  /// ✅ Map DTO → Entity
+  Movie toEntity() {
+    return Movie(
+      imdbID: imdbID,
+      title: title,
+      year: year,
+      type: type,
+      posterUrl: poster,
     );
   }
 }

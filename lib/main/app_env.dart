@@ -34,9 +34,9 @@ extension _EnvProperties on AppEnvironment {
 
   /// OMDb API base URLs
   static const _baseUrl = {
-    AppEnvironment.dev: 'http://www.omdbapi.com/',
-    AppEnvironment.stage: 'http://www.omdbapi.com/',
-    AppEnvironment.prod: 'http://www.omdbapi.com/',
+    AppEnvironment.dev: 'https://www.omdbapi.com/',
+    AppEnvironment.stage: 'https://www.omdbapi.com/',
+    AppEnvironment.prod: 'https://www.omdbapi.com/',
   };
 
   static const _apiKeyMap = {
@@ -53,9 +53,9 @@ extension _EnvProperties on AppEnvironment {
   };
 
   static const _webPageUrl = {
-    AppEnvironment.dev: 'http://www.omdbapi.com',
-    AppEnvironment.stage: 'http://www.omdbapi.com',
-    AppEnvironment.prod: 'http://www.omdbapi.com',
+    AppEnvironment.dev: 'https://www.omdbapi.com',
+    AppEnvironment.stage: 'https://www.omdbapi.com',
+    AppEnvironment.prod: 'https://www.omdbapi.com',
   };
 
   String get _appTitle => _appTitles[this]!;

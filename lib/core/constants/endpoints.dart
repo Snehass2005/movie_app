@@ -1,6 +1,10 @@
 class ApiEndpoint {
-  static const String search = 's';   // search by title
-  static const String byId = 'i';     // movie by IMDb ID
-  static const String byTitle = 't';  // movie by exact title
-  static const String page = 'page';  // pagination
+  static const String searchParam = 's';    // search by title
+  static const String idParam = 'i';        // movie by IMDb ID
+  static const String titleParam = 't';     // movie by exact title
+  static const String pageParam = 'page';   // pagination
+
+  static const String baseUrl = "https://www.omdbapi.com/";
+  static const String apiKey = "fba622c4"; // replace with your key
+
 }

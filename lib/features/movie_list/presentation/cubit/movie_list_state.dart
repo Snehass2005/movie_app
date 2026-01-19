@@ -6,6 +6,7 @@ class MovieListState extends Equatable {
   final String errorMessage;
   final List<Movie> defaultMovies;
   final List<Movie> searchedMovies;
+  final Map<String, MovieDetail> movieDetails; // ✅ use entity
 
   const MovieListState({
     this.isLoading = false,
@@ -13,6 +14,7 @@ class MovieListState extends Equatable {
     this.errorMessage = '',
     this.defaultMovies = const [],
     this.searchedMovies = const [],
+    this.movieDetails = const {},
   });
 
   MovieListState copyWith({
@@ -21,6 +23,7 @@ class MovieListState extends Equatable {
     String? errorMessage,
     List<Movie>? defaultMovies,
     List<Movie>? searchedMovies,
+    Map<String, MovieDetail>? movieDetails, // ✅ entity
   }) {
     return MovieListState(
       isLoading: isLoading ?? this.isLoading,
@@ -28,12 +31,13 @@ class MovieListState extends Equatable {
       errorMessage: errorMessage ?? this.errorMessage,
       defaultMovies: defaultMovies ?? this.defaultMovies,
       searchedMovies: searchedMovies ?? this.searchedMovies,
+      movieDetails: movieDetails ?? this.movieDetails,
     );
   }
 
   @override
   List<Object?> get props =>
-      [isLoading, isError, errorMessage, defaultMovies, searchedMovies];
+      [isLoading, isError, errorMessage, defaultMovies, searchedMovies, movieDetails];
 }
 
 class MovieListInitial extends MovieListState {
@@ -45,8 +49,15 @@ class MovieListLoading extends MovieListState {
 }
 
 class MovieListSuccess extends MovieListState {
-  const MovieListSuccess(List<Movie> defaultMovies, List<Movie> searchedMovies)
-      : super(defaultMovies: defaultMovies, searchedMovies: searchedMovies);
+  const MovieListSuccess(
+      List<Movie> defaultMovies,
+      List<Movie> searchedMovies,
+      Map<String, MovieDetail> movieDetails, // ✅ entity
+      ) : super(
+    defaultMovies: defaultMovies,
+    searchedMovies: searchedMovies,
+    movieDetails: movieDetails,
+  );
 }
 
 class MovieListError extends MovieListState {

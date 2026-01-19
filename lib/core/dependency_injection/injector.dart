@@ -1,8 +1,7 @@
 import 'package:get_it/get_it.dart';
 
-import 'package:movie_app/core/network/api_client.dart';
-import 'package:movie_app/core/network/connection/connection_listener.dart';
-import 'package:movie_app/core/network/network_service_impl.dart';
+import 'package:movie_app/core/network/network_service.dart';
+import 'package:movie_app/core/network/dio_network_service.dart';
 import 'package:movie_app/features/movie_detail/presentation/cubit/movie_detail_cubit.dart';
 
 // Movie list
@@ -24,25 +23,17 @@ Future<void> initDependencies({
 }) async {
   injector
   // Core
-    ..registerLazySingleton<ApiClient>(
-          () => ApiClient(baseUrl: omdbBaseUrl, apiKey: omdbApiKey),
-    )
-    ..registerLazySingleton<ConnectionStatusListener>(
-          () => ConnectionStatusListener.getInstance(), // ✅ fixed
-    )
-    ..registerLazySingleton<NetworkServiceImpl>(
-          () => NetworkServiceImpl(
-        apiClient: injector<ApiClient>(),
-        connectionListener: injector<ConnectionStatusListener>(), // ✅ fixed
-      ),
+    ..registerLazySingleton<NetworkService>(
+          () => DioNetworkService(), // ✅ concrete implementation
     )
 
   // Data sources
     ..registerLazySingleton<MovieRemoteDataSource>(
-          () => MovieRemoteDataSourceImpl(injector<ApiClient>()),
+          () => MovieRemoteDataSourceImpl(injector<NetworkService>()),
     )
+
     ..registerLazySingleton<MovieDetailRemoteDataSource>(
-          () => MovieDetailRemoteDataSourceImpl(injector<ApiClient>()),
+          () => MovieDetailRemoteDataSourceImpl(injector<NetworkService>()),
     )
 
   // Repositories
@@ -63,10 +54,13 @@ Future<void> initDependencies({
 
   // Cubits
     ..registerFactory<MovieListCubit>(
-          () => MovieListCubit(injector<SearchMoviesUseCase>()), // ✅ if constructor takes arg
+          () => MovieListCubit(
+        injector<SearchMoviesUseCase>(),
+        injector<GetMovieDetailUseCase>(),
+      ),
     )
+
     ..registerFactory<MovieDetailCubit>(
           () => MovieDetailCubit(injector<GetMovieDetailUseCase>()),
     );
-
 }

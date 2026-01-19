@@ -726,6 +726,10 @@ class Dimens {
   static const double standard_698 = 698.0;
   static const double standard_699 = 699.0;
   static const double standard_700 = 700.0;
+  static const double imageLarge = 250;
+  static const double iconLarge = 100;
+  static const double thumbnailSize = 50;
+
 
   // Spacing
   static const double spacing_8 = 8.0;

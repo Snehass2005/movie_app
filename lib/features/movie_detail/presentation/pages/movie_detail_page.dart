@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:movie_app/core/constants/routes.dart';
 
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
 import 'package:movie_app/features/movie_detail/presentation/cubit/movie_detail_cubit.dart';
@@ -11,37 +13,36 @@ import 'package:movie_app/shared/theme/app_colors.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
 import 'package:movie_app/features/movie_detail/presentation/widgets/movie_detail_view.dart';
 
-class MovieDetailPage extends StatefulWidget {
+class MovieDetailPage extends StatelessWidget {
   final String imdbID;
 
   const MovieDetailPage({super.key, required this.imdbID});
 
   @override
-  State<MovieDetailPage> createState() => _MovieDetailPageState();
-}
-
-class _MovieDetailPageState extends State<MovieDetailPage> {
-  late final MovieDetailCubit _movieDetailCubit;
-  late final MovieListCubit _movieListCubit;
-
-  @override
-  void initState() {
-    super.initState();
-    _movieDetailCubit = MovieDetailCubit(GetIt.instance<GetMovieDetailUseCase>());
-    _movieListCubit = MovieListCubit(GetIt.instance<SearchMoviesUseCase>());
-    _movieDetailCubit.fetchDetail(widget.imdbID);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<MovieDetailCubit>(create: (_) => _movieDetailCubit),
-        BlocProvider<MovieListCubit>(create: (_) => _movieListCubit),
+        BlocProvider<MovieDetailCubit>(
+          create: (_) {
+            final cubit = MovieDetailCubit(GetIt.instance<GetMovieDetailUseCase>());
+            cubit.fetchDetail(imdbID); // ✅ trigger fetch immediately
+            return cubit;
+          },
+        ),
+        BlocProvider<MovieListCubit>(
+          create: (_) => MovieListCubit(
+            GetIt.instance<SearchMoviesUseCase>(),
+            GetIt.instance<GetMovieDetailUseCase>(),
+          ),
+        ),
       ],
       child: Scaffold(
         backgroundColor: AppColors.colorSecondary,
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go(RoutesName.defaultPath), // GoRouter back
+          ),
           title: Text('Movie Detail', style: AppTextStyles.openSansBold20),
           centerTitle: true,
           backgroundColor: AppColors.colorSecondary,
@@ -51,14 +52,14 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           color: AppColors.colorSecondary,
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(Dimens.spacing_16),
+              padding: const EdgeInsets.all(Dimens.spacing_16), // ✅ Dimens
               child: BlocConsumer<MovieDetailCubit, MovieDetailState>(
                 listener: (context, state) {
                   if (state is MovieDetailSuccess) {
                     context.read<MovieListCubit>().loadMovies();
                   } else if (state.isError) {
                     _showErrorSnackBar(context, state.errorMessage);
-                    _movieDetailCubit.resetError();
+                    context.read<MovieDetailCubit>().resetError();
                   }
                 },
                 builder: (context, state) {
