@@ -1,9 +1,6 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
 import 'package:movie_app/features/movie_detail/domain/entities/movie_detail.dart';
-
-
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
 
 part 'movie_detail_state.dart';
@@ -19,21 +16,29 @@ class MovieDetailCubit extends Cubit<MovieDetailState> {
     if (currentState is MovieDetailLoaded) {
       emit(currentState.copyWith(isLoading: true));
       try {
-        final result = await _getMovieDetailUseCase(imdbID);
+        // ✅ Explicitly call the method instead of invoking the object
+        final result = await _getMovieDetailUseCase.getMovieDetail(
+          imdbID: imdbID,
+        );
+
         result.fold(
-              (failure) => emit(currentState.copyWith(
-            errorMessage: failure.message,
-            isLoading: false,
-            isError: true,
-          )),
+              (failure) => emit(
+            currentState.copyWith(
+              errorMessage: failure.message,
+              isLoading: false,
+              isError: true,
+            ),
+          ),
               (detail) => emit(MovieDetailSuccess(detail)),
         );
       } catch (e) {
-        emit(currentState.copyWith(
-          errorMessage: 'Failed to fetch movie detail',
-          isLoading: false,
-          isError: true,
-        ));
+        emit(
+          currentState.copyWith(
+            errorMessage: 'Failed to fetch movie detail',
+            isLoading: false,
+            isError: true,
+          ),
+        );
       }
     }
   }

@@ -25,7 +25,12 @@ class MovieListCubit extends Cubit<MovieListState> {
   Future<void> loadMovies({String query = "batman"}) async {
     emit(state.copyWith(isLoading: true));
     currentPage = 1;
-    final result = await searchMoviesUseCase(query, page: currentPage);
+
+    final result = await searchMoviesUseCase(
+      query: query,
+      page: currentPage,
+    );
+
     result.fold(
           (failure) => emit(state.copyWith(
         isLoading: false,
@@ -82,7 +87,12 @@ class MovieListCubit extends Cubit<MovieListState> {
   Future<void> search(String query) async {
     emit(state.copyWith(isLoading: true));
     currentPage = 1;
-    final result = await searchMoviesUseCase(query, page: currentPage);
+
+    final result = await searchMoviesUseCase(
+      query: query,
+      page: currentPage,
+    );
+
     result.fold(
           (failure) => emit(state.copyWith(
         isLoading: false,
@@ -112,7 +122,12 @@ class MovieListCubit extends Cubit<MovieListState> {
     if (!hasMoreDefault) return;
     emit(state.copyWith(isLoading: true));
     currentPage++;
-    final result = await searchMoviesUseCase(query, page: currentPage);
+
+    final result = await searchMoviesUseCase(
+      query: query,
+      page: currentPage,
+    );
+
     result.fold(
           (failure) => emit(state.copyWith(
         isLoading: false,
@@ -135,7 +150,12 @@ class MovieListCubit extends Cubit<MovieListState> {
     if (!hasMoreSearch) return;
     emit(state.copyWith(isLoading: true));
     currentPage++;
-    final result = await searchMoviesUseCase(query, page: currentPage);
+
+    final result = await searchMoviesUseCase(
+      query: query,
+      page: currentPage,
+    );
+
     result.fold(
           (failure) => emit(state.copyWith(
         isLoading: false,
@@ -157,7 +177,10 @@ class MovieListCubit extends Cubit<MovieListState> {
   Future<void> loadMovieDetail(String imdbID) async {
     if (state.movieDetails.containsKey(imdbID)) return; // ✅ cached
 
-    final result = await getMovieDetailUseCase(imdbID);
+    final result = await getMovieDetailUseCase.getMovieDetail(
+      imdbID: imdbID,
+    );
+
     result.fold(
           (failure) => emit(state.copyWith(
         isError: true,

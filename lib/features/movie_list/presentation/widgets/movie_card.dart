@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get/get.dart';
+import 'package:movie_app/core/constants/app_constants.dart';
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
 import 'package:movie_app/features/movie_list/domain/entities/movie.dart';
@@ -17,13 +18,13 @@ class MovieCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(
         horizontal: Dimens.spacing_8,
         vertical: Dimens.spacing_8,
-      ), // ✅ use Dimens
+      ),
       child: ListTile(
         leading: CachedNetworkImage(
           imageUrl: movie.posterUrl.isNotEmpty
               ? movie.posterUrl
-              : 'https://via.placeholder.com/50?text=No+Image',
-          width: Dimens.thumbnailSize, // ✅ use Dimens
+              : AppConstants.noPosterUrl,
+          width: Dimens.thumbnailSize,
           fit: BoxFit.cover,
           placeholder: (context, url) => const SizedBox(
             width: Dimens.thumbnailSize,
@@ -33,9 +34,9 @@ class MovieCard extends StatelessWidget {
           errorWidget: (context, url, error) =>
           const Icon(Icons.broken_image, size: Dimens.thumbnailSize),
         ),
-        title: Text(movie.title, style: AppTextStyles.openSansRegular16), // ✅ style
+        title: Text(movie.title, style: AppTextStyles.openSansRegular16),
         subtitle: Text('${'year'.tr}: ${movie.year}',
-            style: AppTextStyles.openSansRegular14), // ✅ style
+            style: AppTextStyles.openSansRegular14),
         onTap: () {
           context.goNamed(
             'detail',

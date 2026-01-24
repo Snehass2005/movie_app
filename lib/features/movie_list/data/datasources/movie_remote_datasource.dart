@@ -1,4 +1,3 @@
-import 'package:movie_app/core/constants/endpoints.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/core/network/network_service.dart';
@@ -24,17 +23,14 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
         int page = 1,
       }) async {
     try {
-      // ✅ Use baseUrl and include both query + apiKey
       final eitherType = await networkService.get(
-        ApiEndpoint.baseUrl,
+        '/', // OMDb root endpoint
         queryParameters: {
-          ApiEndpoint.searchParam: query,   // "s" → search by title
-          ApiEndpoint.pageParam: '$page',   // "page" → pagination
-          'apikey': ApiEndpoint.apiKey,     // API key required by OMDb
+          's': query,      // OMDb search by title
+          'page': '$page', // pagination
         },
       );
 
-      // Fold Either into Left(AppException) or Right(List<MovieListDto>)
       return eitherType.fold(
             (exception) => Left(exception),
             (response) {

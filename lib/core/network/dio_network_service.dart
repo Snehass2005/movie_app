@@ -22,6 +22,16 @@ class DioNetworkService extends NetworkService {
     _dio = dio.Dio();
     _dio.options = dioBaseOptions;
 
+    // ✅ Automatically add apiKey to every request
+    _dio.interceptors.add(
+      dio.InterceptorsWrapper(
+        onRequest: (options, handler) {
+          options.queryParameters.addAll({'apikey': EnvInfo.apiKey});
+          return handler.next(options);
+        },
+      ),
+    );
+
     if (kDebugMode) {
       _dio.interceptors.add(
         PrettyDioLogger(

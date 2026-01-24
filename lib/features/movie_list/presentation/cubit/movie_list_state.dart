@@ -6,7 +6,7 @@ class MovieListState extends Equatable {
   final String errorMessage;
   final List<Movie> defaultMovies;
   final List<Movie> searchedMovies;
-  final Map<String, MovieDetail> movieDetails; // ✅ use entity
+  final Map<String, MovieDetail> movieDetails;
 
   const MovieListState({
     this.isLoading = false,

@@ -1,20 +1,20 @@
-import 'package:movie_app/core/exceptions/http_exception.dart';
-import 'package:movie_app/core/network/model/either.dart';
-import 'package:movie_app/features/movie_list/domain/entities/movie.dart';
-import 'package:movie_app/features/movie_list/domain/respositories/movie_list_respository.dart';
+import '../../../../core/exceptions/http_exception.dart';
+import '../../../../core/network/model/either.dart';
+import '../entities/movie.dart';
+import '../respositories/movie_list_respository.dart';
 
 /// Use case layer for searching movies.
 /// Matches the MovieListRepository interface and returns Domain Entities.
-/// ✅ Keep it lean: just fetch data, no filtering/sorting.
+
 class SearchMoviesUseCase {
   final MovieListRepository _repository;
 
   const SearchMoviesUseCase(this._repository);
 
-  Future<Either<AppException, List<Movie>>> call(
-      String query, {
-        int page = 1,
-      }) async {
-    return await _repository.searchMovies(query, page: page);
+  Future<Either<AppException, List<Movie>>> call({
+    required String query,
+    int page = 1,
+  }) async {
+    return await _repository.searchMovies(query: query, page: page);
   }
 }

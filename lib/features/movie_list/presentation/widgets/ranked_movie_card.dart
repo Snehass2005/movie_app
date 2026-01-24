@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get/get.dart';
+
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/app_colors.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
@@ -16,6 +17,19 @@ class RankedMovieCard extends StatelessWidget {
     required this.movie,
     required this.rank,
   });
+
+  Color _rankColor(int rank) {
+    switch (rank) {
+      case 1:
+        return Colors.amber;
+      case 2:
+        return Colors.grey;
+      case 3:
+        return Colors.brown;
+      default:
+        return AppColors.colorPrimary;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,16 +57,19 @@ class RankedMovieCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(Dimens.standard_8),
                     child: CachedNetworkImage(
                       imageUrl: movie.posterUrl,
-                      width: Dimens.standard_80,   // add to Dimens
-                      height: Dimens.standard_120, // add to Dimens
+                      width: Dimens.standard_80,
+                      height: Dimens.standard_120,
                       fit: BoxFit.cover,
                       placeholder: (context, url) => const SizedBox(
                         width: Dimens.standard_80,
                         height: Dimens.standard_120,
                         child: Center(child: CircularProgressIndicator()),
                       ),
-                      errorWidget: (context, url, error) =>
-                      const Icon(Icons.broken_image, size: Dimens.standard_80),
+                      errorWidget: (context, url, error) => Icon(
+                        Icons.broken_image,
+                        size: Dimens.standard_80,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ),
                   const SizedBox(width: Dimens.standard_12),
@@ -60,16 +77,26 @@ class RankedMovieCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(movie.title, style: AppTextStyles.openSansBold16),
+                        Text(
+                          movie.title,
+                          style: AppTextStyles.openSansBold16,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         const SizedBox(height: Dimens.standard_4),
-                        Text('${'rating'.tr}: ${movie.imdbRating}',
-                            style: AppTextStyles.openSansRegular14),
+                        Text(
+                          '${'rating'.tr}: ${movie.imdbRating}',
+                          style: AppTextStyles.openSansRegular14,
+                        ),
                         const SizedBox(height: Dimens.standard_4),
-                        Text('${'country_format'.tr}: ${movie.country} / ${movie.type}',
-                            style: AppTextStyles.openSansRegular12),
+                        Text(
+                          '${'country_format'.tr}: ${movie.country} / ${movie.type}',
+                          style: AppTextStyles.openSansRegular12,
+                        ),
                         const SizedBox(height: Dimens.standard_4),
-                        Text('${'director'.tr}: ${movie.director}',
-                            style: AppTextStyles.openSansRegular12),
+                        Text(
+                          '${'director'.tr}: ${movie.director}',
+                          style: AppTextStyles.openSansRegular12,
+                        ),
                       ],
                     ),
                   ),
@@ -82,7 +109,7 @@ class RankedMovieCard extends StatelessWidget {
               top: 0,
               left: 0,
               child: CircleAvatar(
-                backgroundColor: AppColors.colorPrimary,
+                backgroundColor: _rankColor(rank),
                 radius: Dimens.standard_12,
                 child: Text(
                   '$rank',

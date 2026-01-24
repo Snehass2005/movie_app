@@ -18,10 +18,10 @@ abstract class MovieDetailState extends Equatable {
 
 class MovieDetailLoaded extends MovieDetailState {
   const MovieDetailLoaded({
-    bool isLoading = false,
-    bool isError = false,
-    String errorMessage = '',
-  }) : super(isLoading: isLoading, isError: isError, errorMessage: errorMessage);
+    super.isLoading = false,
+    super.isError = false,
+    super.errorMessage = '',
+  });
 
   MovieDetailLoaded copyWith({
     bool? isLoading,
@@ -35,7 +35,6 @@ class MovieDetailLoaded extends MovieDetailState {
     );
   }
 }
-
 class MovieDetailSuccess extends MovieDetailState {
   final MovieDetail detail; // ✅ now recognized
 

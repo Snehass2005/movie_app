@@ -5,5 +5,7 @@ import 'package:movie_app/features/movie_detail/domain/entities/movie_detail.dar
 /// Domain repository interface for fetching movie details.
 /// Exposes [MovieDetail] entity instead of DTO.
 abstract class MovieDetailRepository {
-  Future<Either<AppException, MovieDetail>> getMovieDetail(String imdbID);
+  Future<Either<AppException, MovieDetail>> getMovieDetail({
+    required String imdbID,
+  });
 }

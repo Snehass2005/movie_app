@@ -35,14 +35,10 @@ Future<void> mainCommon(AppEnvironment environment) async {
   // Initialize environment-specific configuration
   EnvInfo.initialize(environment);
 
+  await initDependencies();
+
   // Load translations for the app
   final Map<String, Map<String, String>> translations = await loadTranslations();
-
-  // Initialize dependency injection (API only)
-  await initDependencies(
-    omdbBaseUrl: EnvInfo.baseUrl,
-    omdbApiKey: EnvInfo.apiKey,
-  );
 
   // Run the app
   runApp(MyApp(languageConfig: translations));

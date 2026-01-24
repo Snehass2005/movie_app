@@ -1,10 +1,8 @@
-import 'package:movie_app/core/constants/endpoints.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/core/network/network_service.dart';
 import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
-
-import '../../../../core/network/model/response.dart';
+import 'package:movie_app/core/network/model/response.dart';
 
 /// Contract for movie detail remote data source
 abstract class MovieDetailRemoteDataSource {
@@ -24,20 +22,15 @@ class MovieDetailRemoteDataSourceImpl implements MovieDetailRemoteDataSource {
     required String imdbID,
   }) async {
     try {
-      // ✅ Use baseUrl and include both imdbID and apiKey
-      Either<AppException, Response> eitherType = await networkService.get(
-        ApiEndpoint.baseUrl,
+      final eitherType = await networkService.get(
+        '/', // OMDb root endpoint
         queryParameters: {
-          ApiEndpoint.idParam: imdbID,       // "i" → IMDb ID
-          'apikey': ApiEndpoint.apiKey,      // API key required by OMDb
+          'i': imdbID, // OMDb expects "i" for IMDb ID
         },
       );
 
-      // Fold Either into Left(AppException) or Right(MovieDetailDto)
       return eitherType.fold(
-            (exception) {
-          return Left(exception);
-        },
+            (exception) => Left(exception),
             (response) {
           final movieDetail = MovieDetailDto.fromJson(response.data);
           return Right(movieDetail);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
+import 'package:movie_app/core/constants/app_constants.dart';
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
 import 'package:movie_app/features/movie_detail/domain/entities/movie_detail.dart';
@@ -21,7 +22,7 @@ class MovieDetailView extends StatelessWidget {
             child: CachedNetworkImage(
               imageUrl: detail.posterUrl.isNotEmpty
                   ? detail.posterUrl
-                  : 'https://via.placeholder.com/150?text=No+Image',
+                  : AppConstants.noPosterUrl,
               height: Dimens.imageLarge,
               fit: BoxFit.cover,
               placeholder: (context, url) => SizedBox(
