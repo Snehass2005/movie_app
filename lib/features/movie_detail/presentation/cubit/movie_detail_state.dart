@@ -1,45 +1,34 @@
 part of 'movie_detail_cubit.dart';
 
-
 abstract class MovieDetailState extends Equatable {
-  final bool isLoading;
-  final bool isError;
-  final String errorMessage;
-
-  const MovieDetailState({
-    this.isLoading = false,
-    this.isError = false,
-    this.errorMessage = '',
-  });
+  const MovieDetailState();
 
   @override
-  List<Object?> get props => [isLoading, isError, errorMessage];
+  List<Object?> get props => [];
 }
 
-class MovieDetailLoaded extends MovieDetailState {
-  const MovieDetailLoaded({
-    super.isLoading = false,
-    super.isError = false,
-    super.errorMessage = '',
-  });
-
-  MovieDetailLoaded copyWith({
-    bool? isLoading,
-    bool? isError,
-    String? errorMessage,
-  }) {
-    return MovieDetailLoaded(
-      isLoading: isLoading ?? this.isLoading,
-      isError: isError ?? this.isError,
-      errorMessage: errorMessage ?? this.errorMessage,
-    );
-  }
+class MovieDetailInitial extends MovieDetailState {
+  const MovieDetailInitial();
 }
+
+class MovieDetailLoading extends MovieDetailState {
+  const MovieDetailLoading();
+}
+
 class MovieDetailSuccess extends MovieDetailState {
-  final MovieDetail detail; // ✅ now recognized
+  final MovieDetailDto detail;
 
   const MovieDetailSuccess(this.detail);
 
   @override
   List<Object?> get props => [detail];
+}
+
+class MovieDetailError extends MovieDetailState {
+  final String message;
+
+  const MovieDetailError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }

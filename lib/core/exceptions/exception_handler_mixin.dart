@@ -1,29 +1,19 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
-/// A mixin to handle API and network exceptions gracefully.
-mixin ExceptionHandlerMixin<T extends StatefulWidget> on State<T> {
-  void handleException(Object error, {String endpoint = ''}) {
-    String message;
-
+/// A mixin to normalize API and network exceptions.
+/// Use this in Cubits, Repositories, or DataSources to convert errors into user-friendly messages.
+mixin ExceptionHandlerMixin {
+  String getErrorMessage(Object error, {String endpoint = ''}) {
     if (error is DioException) {
       if (error.response?.statusCode == 401) {
-        message = 'Session expired. Please login again.';
-      } else {
-        message = error.response?.data?['message'] ?? 'Internal error occurred';
+        return 'Session expired. Please login again.';
       }
+      return error.response?.data?['message'] ?? 'Internal error occurred';
     } else if (error is SocketException) {
-      message = 'Unable to connect to server';
+      return 'Unable to connect to server';
     } else {
-      message = 'Unknown error occurred';
+      return 'Unknown error occurred';
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
 }

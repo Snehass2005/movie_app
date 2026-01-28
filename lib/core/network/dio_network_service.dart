@@ -38,7 +38,7 @@ class DioNetworkService extends NetworkService {
           queryParameters: true,
           requestHeader: true,
           requestBody: true,
-          responseBody: false,
+          responseBody: true,
           error: true,
           showProcessingTime: true,
           canShowLog: kDebugMode,
@@ -51,8 +51,8 @@ class DioNetworkService extends NetworkService {
   dio.BaseOptions get dioBaseOptions => dio.BaseOptions(
     baseUrl: baseUrl, // ✅ must be https://www.omdbapi.com/
     headers: headers,
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 30),
   );
 
   @override

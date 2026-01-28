@@ -1,3 +1,4 @@
+import 'package:movie_app/core/constants/endpoints.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/core/network/network_service.dart';
@@ -26,8 +27,8 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
       final eitherType = await networkService.get(
         '/', // OMDb root endpoint
         queryParameters: {
-          's': query,      // OMDb search by title
-          'page': '$page', // pagination
+          ApiEndpoint.searchParam: query,
+          ApiEndpoint.pageParam: '$page',
         },
       );
 

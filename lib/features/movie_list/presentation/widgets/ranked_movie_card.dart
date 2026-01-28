@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get/get.dart';
+import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
 
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/app_colors.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
-import 'package:movie_app/features/movie_detail/domain/entities/movie_detail.dart';
+
 
 class RankedMovieCard extends StatelessWidget {
-  final MovieDetail movie;
+  final MovieDetailDto movie;
   final int rank;
 
   const RankedMovieCard({
@@ -56,7 +57,7 @@ class RankedMovieCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(Dimens.standard_8),
                     child: CachedNetworkImage(
-                      imageUrl: movie.posterUrl,
+                      imageUrl: movie.poster,
                       width: Dimens.standard_80,
                       height: Dimens.standard_120,
                       fit: BoxFit.cover,

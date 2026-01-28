@@ -1,6 +1,7 @@
+import 'package:movie_app/features/movie_list/data/models/movie_list_dto.dart';
+
 import '../../../../core/exceptions/http_exception.dart';
 import '../../../../core/network/model/either.dart';
-import '../entities/movie.dart';
 import '../respositories/movie_list_respository.dart';
 
 /// Use case layer for searching movies.
@@ -11,7 +12,7 @@ class SearchMoviesUseCase {
 
   const SearchMoviesUseCase(this._repository);
 
-  Future<Either<AppException, List<Movie>>> call({
+  Future<Either<AppException, List<MovieListDto>>> call({
     required String query,
     int page = 1,
   }) async {

@@ -1,6 +1,7 @@
-import '../../domain/entities/movie_detail.dart';
+import '../../../../core/constants/app_constants.dart';
 
 class MovieDetailDto {
+  final String imdbID;
   final String title;
   final String year;
   final String rated;
@@ -16,11 +17,10 @@ class MovieDetailDto {
   final String awards;
   final String poster;
   final String imdbRating;
-  final String imdbID;
   final String type;
 
-  // ✅ Proper unnamed constructor
   const MovieDetailDto({
+    required this.imdbID,
     required this.title,
     required this.year,
     required this.rated,
@@ -36,12 +36,16 @@ class MovieDetailDto {
     required this.awards,
     required this.poster,
     required this.imdbRating,
-    required this.imdbID,
     required this.type,
   });
 
   factory MovieDetailDto.fromJson(Map<String, dynamic> json) {
+    final posterUrl = (json['Poster'] == null || json['Poster'] == 'N/A')
+        ? AppConstants.noPosterUrl
+        : json['Poster'];
+
     return MovieDetailDto(
+      imdbID: json['imdbID'] ?? '',
       title: json['Title'] ?? '',
       year: json['Year'] ?? '',
       rated: json['Rated'] ?? '',
@@ -55,35 +59,9 @@ class MovieDetailDto {
       language: json['Language'] ?? '',
       country: json['Country'] ?? '',
       awards: json['Awards'] ?? '',
-      poster: (json['Poster'] == null || json['Poster'] == 'N/A')
-          ? 'https://via.placeholder.com/300x450?text=No+Poster'
-          : json['Poster'],
-      imdbRating: json['imdbRating'] ?? 'N/A',
-      imdbID: json['imdbID'] ?? '',
+      poster: posterUrl,
+      imdbRating: json['imdbRating'] ?? '',
       type: json['Type'] ?? '',
-    );
-  }
-
-  /// ✅ Map DTO → Entity
-  MovieDetail toEntity() {
-    return MovieDetail(
-      imdbID: imdbID,
-      title: title,
-      year: year,
-      rated: rated,
-      released: released,
-      runtime: runtime,
-      genre: genre,
-      director: director,
-      writer: writer,
-      actors: actors,
-      plot: plot,
-      language: language,
-      country: country,
-      awards: awards,
-      posterUrl: poster,
-      imdbRating: imdbRating,
-      type: type,
     );
   }
 }

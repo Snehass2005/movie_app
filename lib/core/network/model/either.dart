@@ -1,4 +1,3 @@
-
 /// A generic Either type to represent success (Right) or failure (Left).
 abstract class Either<L, R> {
   const Either();
@@ -11,6 +10,36 @@ abstract class Either<L, R> {
 
   L? get leftOrNull;
   R? get rightOrNull;
+
+  /// Transform the Right value if present
+  Either<L, T> map<T>(T Function(R r) transform) {
+    return fold(
+          (l) => Left<L, T>(l),
+          (r) => Right<L, T>(transform(r)),
+    );
+  }
+
+  /// Transform the Left value if present
+  Either<T, R> mapLeft<T>(T Function(L l) transform) {
+    return fold(
+          (l) => Left<T, R>(transform(l)),
+          (r) => Right<T, R>(r),
+    );
+  }
+
+  /// Run side-effect if Left
+  void onLeft(void Function(L l) action) {
+    if (isLeft && leftOrNull != null) {
+      action(leftOrNull as L);
+    }
+  }
+
+  /// Run side-effect if Right
+  void onRight(void Function(R r) action) {
+    if (isRight && rightOrNull != null) {
+      action(rightOrNull as R);
+    }
+  }
 }
 
 class Left<L, R> extends Either<L, R> {

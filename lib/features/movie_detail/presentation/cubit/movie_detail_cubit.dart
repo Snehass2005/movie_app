@@ -1,52 +1,31 @@
-import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
-import 'package:movie_app/features/movie_detail/domain/entities/movie_detail.dart';
+import 'package:equatable/equatable.dart';
+import 'package:movie_app/core/exceptions/exception_handler_mixin.dart';
+import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
 
 part 'movie_detail_state.dart';
 
-class MovieDetailCubit extends Cubit<MovieDetailState> {
+class MovieDetailCubit extends Cubit<MovieDetailState> with ExceptionHandlerMixin {
   final GetMovieDetailUseCase _getMovieDetailUseCase;
 
-  MovieDetailCubit(this._getMovieDetailUseCase)
-      : super(const MovieDetailLoaded());
+  MovieDetailCubit(this._getMovieDetailUseCase) : super(const MovieDetailInitial());
 
   Future<void> fetchDetail(String imdbID) async {
-    final currentState = state;
-    if (currentState is MovieDetailLoaded) {
-      emit(currentState.copyWith(isLoading: true));
-      try {
-        // ✅ Explicitly call the method instead of invoking the object
-        final result = await _getMovieDetailUseCase.getMovieDetail(
-          imdbID: imdbID,
-        );
+    emit(const MovieDetailLoading());
 
-        result.fold(
-              (failure) => emit(
-            currentState.copyWith(
-              errorMessage: failure.message,
-              isLoading: false,
-              isError: true,
-            ),
-          ),
-              (detail) => emit(MovieDetailSuccess(detail)),
-        );
-      } catch (e) {
-        emit(
-          currentState.copyWith(
-            errorMessage: 'Failed to fetch movie detail',
-            isLoading: false,
-            isError: true,
-          ),
-        );
-      }
-    }
-  }
+    try {
+      final result = await _getMovieDetailUseCase.getMovieDetail(imdbID: imdbID);
 
-  void resetError() {
-    final currentState = state;
-    if (currentState is MovieDetailLoaded) {
-      emit(currentState.copyWith(isLoading: false, isError: false));
+      result.onLeft((failure) {
+        emit(MovieDetailError(getErrorMessage(failure)));
+      });
+
+      result.onRight((detail) {
+        emit(MovieDetailSuccess(detail)); // ✅ detail is MovieDetailDto now
+      });
+    } catch (e) {
+      emit(MovieDetailError(getErrorMessage(e)));
     }
   }
 }

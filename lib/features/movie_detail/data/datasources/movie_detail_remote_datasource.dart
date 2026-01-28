@@ -1,3 +1,4 @@
+import 'package:movie_app/core/constants/endpoints.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/core/network/network_service.dart';
@@ -25,7 +26,7 @@ class MovieDetailRemoteDataSourceImpl implements MovieDetailRemoteDataSource {
       final eitherType = await networkService.get(
         '/', // OMDb root endpoint
         queryParameters: {
-          'i': imdbID, // OMDb expects "i" for IMDb ID
+          ApiEndpoint.idParam: imdbID,// OMDb expects "i" for IMDb ID
         },
       );
 

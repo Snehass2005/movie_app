@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 import 'package:movie_app/core/constants/app_constants.dart';
+import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
-import 'package:movie_app/features/movie_detail/domain/entities/movie_detail.dart';
 
 class MovieDetailView extends StatelessWidget {
-  final MovieDetail detail;
+  final MovieDetailDto detail;
 
   const MovieDetailView({super.key, required this.detail});
 
@@ -20,8 +20,8 @@ class MovieDetailView extends StatelessWidget {
         children: [
           Center(
             child: CachedNetworkImage(
-              imageUrl: detail.posterUrl.isNotEmpty
-                  ? detail.posterUrl
+              imageUrl: detail.poster.isNotEmpty
+                  ? detail.poster
                   : AppConstants.noPosterUrl,
               height: Dimens.imageLarge,
               fit: BoxFit.cover,

@@ -1,7 +1,8 @@
+
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/features/movie_detail/data/datasources/movie_detail_remote_datasource.dart';
-import 'package:movie_app/features/movie_detail/domain/entities/movie_detail.dart';
+import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
 import 'package:movie_app/features/movie_detail/domain/respositories/movie_detail_respository.dart';
 
 
@@ -11,14 +12,10 @@ class MovieDetailRepositoryImpl implements MovieDetailRepository {
   MovieDetailRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Either<AppException, MovieDetail>> getMovieDetail({
+  Future<Either<AppException, MovieDetailDto>> getMovieDetail({
     required String imdbID,
   }) async {
-    final result = await _remoteDataSource.getMovieDetail(imdbID: imdbID);
-
-    return result.fold(
-          (error) => Left<AppException, MovieDetail>(error),
-          (dto) => Right<AppException, MovieDetail>(dto.toEntity()),
-    );
+    // ✅ return DTO directly, no mapping to Entity
+    return _remoteDataSource.getMovieDetail(imdbID: imdbID);
   }
 }

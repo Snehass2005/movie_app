@@ -1,66 +1,35 @@
 part of 'movie_list_cubit.dart';
 
-class MovieListState extends Equatable {
-  final bool isLoading;
-  final bool isError;
-  final String errorMessage;
-  final List<Movie> defaultMovies;
-  final List<Movie> searchedMovies;
-  final Map<String, MovieDetail> movieDetails;
-
-  const MovieListState({
-    this.isLoading = false,
-    this.isError = false,
-    this.errorMessage = '',
-    this.defaultMovies = const [],
-    this.searchedMovies = const [],
-    this.movieDetails = const {},
-  });
-
-  MovieListState copyWith({
-    bool? isLoading,
-    bool? isError,
-    String? errorMessage,
-    List<Movie>? defaultMovies,
-    List<Movie>? searchedMovies,
-    Map<String, MovieDetail>? movieDetails, // ✅ entity
-  }) {
-    return MovieListState(
-      isLoading: isLoading ?? this.isLoading,
-      isError: isError ?? this.isError,
-      errorMessage: errorMessage ?? this.errorMessage,
-      defaultMovies: defaultMovies ?? this.defaultMovies,
-      searchedMovies: searchedMovies ?? this.searchedMovies,
-      movieDetails: movieDetails ?? this.movieDetails,
-    );
-  }
+abstract class MovieListState extends Equatable {
+  const MovieListState();
 
   @override
-  List<Object?> get props =>
-      [isLoading, isError, errorMessage, defaultMovies, searchedMovies, movieDetails];
+  List<Object?> get props => [];
 }
 
 class MovieListInitial extends MovieListState {
-  const MovieListInitial() : super();
+  const MovieListInitial();
 }
 
 class MovieListLoading extends MovieListState {
-  const MovieListLoading() : super(isLoading: true);
+  const MovieListLoading();
 }
 
 class MovieListSuccess extends MovieListState {
-  const MovieListSuccess(
-      List<Movie> defaultMovies,
-      List<Movie> searchedMovies,
-      Map<String, MovieDetail> movieDetails, // ✅ entity
-      ) : super(
-    defaultMovies: defaultMovies,
-    searchedMovies: searchedMovies,
-    movieDetails: movieDetails,
-  );
+  final List<MovieListDto> defaultMovies;
+  final List<MovieListDto> searchedMovies;
+  final Map<String,MovieDetailDto> movieDetails;
+
+  const MovieListSuccess(this.defaultMovies, this.searchedMovies, this.movieDetails);
+
+  @override
+  List<Object?> get props => [defaultMovies, searchedMovies, movieDetails];
 }
 
 class MovieListError extends MovieListState {
-  const MovieListError(String message)
-      : super(errorMessage: message, isError: true);
+  final String message;
+  const MovieListError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }

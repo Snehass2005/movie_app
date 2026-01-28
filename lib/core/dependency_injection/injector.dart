@@ -8,14 +8,13 @@ import 'package:movie_app/features/movie_list/data/datasources/movie_remote_data
 import 'package:movie_app/features/movie_list/data/respositories/movie_list_respository_impl.dart';
 import 'package:movie_app/features/movie_list/domain/respositories/movie_list_respository.dart';
 import 'package:movie_app/features/movie_list/domain/usecases/movie_search_usecases.dart';
-import 'package:movie_app/features/movie_list/presentation/cubit/movie_list_cubit.dart';
 
 // Movie detail
 import 'package:movie_app/features/movie_detail/data/datasources/movie_detail_remote_datasource.dart';
 import 'package:movie_app/features/movie_detail/data/respositories/movie_detail_respository_impl.dart';
 import 'package:movie_app/features/movie_detail/domain/respositories/movie_detail_respository.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
-import 'package:movie_app/features/movie_detail/presentation/cubit/movie_detail_cubit.dart';
+
 
 // Environment
 import 'package:movie_app/main/app_env.dart';

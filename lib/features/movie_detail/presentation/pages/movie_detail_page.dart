@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:movie_app/core/constants/routes.dart';
 import 'package:movie_app/core/dependency_injection/injector.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
@@ -60,15 +59,14 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               padding: const EdgeInsets.all(Dimens.spacing_16),
               child: BlocConsumer<MovieDetailCubit, MovieDetailState>(
                 listener: (context, state) {
-                  if (state.isError) {
-                    _showErrorSnackBar(context, state.errorMessage);
-                    _movieDetailCubit.resetError();
+                  if (state is MovieDetailError) {
+                    _showErrorSnackBar(context, state.message);
                   }
                 },
                 builder: (context, state) {
-                  if (state.isLoading) {
+                  if (state is MovieDetailLoading) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (state is MovieDetailSuccess) {
+                  } else if (state is MovieDetailSuccess)  {
                     return Card(
                       elevation: Dimens.elevation_4,
                       shape: RoundedRectangleBorder(
@@ -79,10 +77,10 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                         child: MovieDetailView(detail: state.detail),
                       ),
                     );
-                  } else if (state.isError) {
+                  } else if (state is MovieDetailError) {
                     return Center(
                       child: Text(
-                        state.errorMessage,
+                        state.message,
                         style: AppTextStyles.openSansRegular14,
                       ),
                     );

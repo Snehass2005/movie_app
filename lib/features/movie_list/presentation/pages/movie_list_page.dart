@@ -5,11 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:movie_app/core/constants/routes.dart';
 import 'package:movie_app/core/dependency_injection/injector.dart';
-import 'package:movie_app/core/exceptions/http_exception.dart';
-import 'package:movie_app/core/network/model/either.dart';
-import 'package:movie_app/core/utils/debouncer.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
-import 'package:movie_app/features/movie_detail/domain/entities/movie_detail.dart';
 import 'package:movie_app/features/movie_list/domain/usecases/movie_search_usecases.dart';
 import 'package:movie_app/features/movie_list/presentation/widgets/ranked_movie_card.dart';
 import 'package:movie_app/shared/theme/app_colors.dart';
@@ -28,7 +24,6 @@ class MovieListPage extends StatefulWidget {
 class _MovieListPageState extends State<MovieListPage> {
   late MovieListCubit _movieListCubit;
   late final ScrollController _scrollController;
-  late final Debouncer _debouncer;
   late final TextEditingController searchController;
 
   String currentQuery = "batman";
@@ -37,7 +32,6 @@ class _MovieListPageState extends State<MovieListPage> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _debouncer = Debouncer(milliseconds: 500);
     searchController = TextEditingController();
 
     final searchMoviesUseCase = injector<SearchMoviesUseCase>();
@@ -47,10 +41,10 @@ class _MovieListPageState extends State<MovieListPage> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        if (_movieListCubit.searchedMovies.isNotEmpty) {
-          _movieListCubit.loadMoreSearch(currentQuery);
-        } else {
+        if (currentQuery == "batman") {
           _movieListCubit.loadMoreMovies(currentQuery);
+        } else {
+          _movieListCubit.loadMoreSearch(currentQuery);
         }
       }
     });
@@ -59,7 +53,6 @@ class _MovieListPageState extends State<MovieListPage> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _debouncer.cancel();
     searchController.dispose();
     _movieListCubit.close();
     super.dispose();
@@ -81,9 +74,8 @@ class _MovieListPageState extends State<MovieListPage> {
             padding: const EdgeInsets.all(Dimens.spacing_16),
             child: BlocConsumer<MovieListCubit, MovieListState>(
               listener: (context, state) {
-                if (state.isError && state.errorMessage.isNotEmpty) {
-                  _showErrorSnackBar(context, state.errorMessage);
-                  _movieListCubit.resetError();
+                if (state is MovieListError) {
+                  _showErrorSnackBar(context, state.message);
                 }
               },
               builder: (context, state) {
@@ -99,7 +91,6 @@ class _MovieListPageState extends State<MovieListPage> {
                           onPressed: () {
                             searchController.clear();
                             currentQuery = "batman";
-                            _movieListCubit.resetSearch();
                             _movieListCubit.loadMovies(query: currentQuery);
                           },
                         ),
@@ -108,16 +99,16 @@ class _MovieListPageState extends State<MovieListPage> {
                         ),
                       ),
                       onChanged: (value) {
-                        _debouncer.run(() {
-                          currentQuery = value.isEmpty ? "batman" : value;
+                        currentQuery = value.isEmpty ? "batman" : value;
+                        if (currentQuery == "batman") {
                           _movieListCubit.loadMovies(query: currentQuery);
-                        });
+                        } else {
+                          _movieListCubit.search(currentQuery); // ✅ search flow
+                        }
                       },
                     ),
                     const SizedBox(height: Dimens.standard_16),
-                    Expanded(
-                      child: _buildMovieList(state),
-                    ),
+                    Expanded(child: _buildMovieList(state)),
                   ],
                 );
               },
@@ -129,9 +120,7 @@ class _MovieListPageState extends State<MovieListPage> {
   }
 
   Widget _buildMovieList(MovieListState state) {
-    if (state.isLoading &&
-        state.defaultMovies.isEmpty &&
-        state.searchedMovies.isEmpty) {
+    if (state is MovieListLoading) {
       return const Center(child: CircularProgressIndicator());
     } else if (state is MovieListSuccess) {
       final moviesToShow =
@@ -148,36 +137,21 @@ class _MovieListPageState extends State<MovieListPage> {
         itemCount: moviesToShow.length,
         itemBuilder: (context, index) {
           final movie = moviesToShow[index];
-          return FutureBuilder<Either<AppException, MovieDetail>>(
-            future: injector<GetMovieDetailUseCase>().getMovieDetail(imdbID: movie.imdbID),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return ListTile(
-                  title: Text('Loading details...', style: AppTextStyles.openSansRegular14),
-                );
-              } else if (snapshot.hasError) {
-                return ListTile(
-                  title: Text(movie.title, style: AppTextStyles.openSansRegular16),
-                  subtitle: Text('Error loading details',
-                      style: AppTextStyles.openSansRegular14),
-                );
-              } else if (snapshot.hasData) {
-                return snapshot.data!.fold(
-                      (failure) => ListTile(
-                    title: Text(movie.title, style: AppTextStyles.openSansRegular16),
-                    subtitle: Text('Error: ${failure.message}',
-                        style: AppTextStyles.openSansRegular14),
-                  ),
-                      (detail) => GestureDetector(
-                    onTap: () {
-                      context.push('${RoutesName.movieDetail}/${detail.imdbID}');
-                    },
-                    child: RankedMovieCard(movie: detail, rank: index + 1),
-                  ),
-                );
-              }
-              return const SizedBox.shrink();
+          final detail = state.movieDetails[movie.imdbID];
+
+          if (detail == null) {
+            _movieListCubit.loadMovieDetail(movie.imdbID); // ✅ preload detail
+            return ListTile(
+              title: Text(movie.title, style: AppTextStyles.openSansRegular16),
+              subtitle: const Text('Loading details...'),
+            );
+          }
+
+          return GestureDetector(
+            onTap: () {
+              context.push('${RoutesName.movieDetail}/${detail.imdbID}');
             },
+            child: RankedMovieCard(movie: detail, rank: index + 1),
           );
         },
       );
