@@ -25,15 +25,15 @@ class MovieDetailRemoteDataSourceImpl implements MovieDetailRemoteDataSource {
   Future<Either<AppException, MovieDetailDto>> getMovieDetail({
     required String imdbID,
   }) async {
-    try {
-      final eitherType = await networkService.get(
-        EnvInfo.baseUrl, // OMDb root endpoint
-        queryParameters: {
-          ApiEndpoint.idParam: imdbID,// OMDb expects "i" for IMDb ID
-        },
-      );
+      try {
+        final eitherType = await networkService.get(
+          ApiEndpoint.movieDetail,
+          queryParameters: {
+            'i': imdbID,              // IMDb ID
+          },
+        );
 
-      return eitherType.fold(
+        return eitherType.fold(
             (exception) => Left(exception),
             (response) {
               log('MovieDetail Response: ${response.data}');

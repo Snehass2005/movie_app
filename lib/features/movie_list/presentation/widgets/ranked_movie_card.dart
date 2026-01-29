@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
-import 'package:get/get.dart';
 import 'package:movie_app/core/constants/routes.dart';
-import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
-
+import 'package:movie_app/features/movie_list/data/models/movie_list_dto.dart'; // ✅ use MovieListDto
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/app_colors.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
 
-
 class RankedMovieCard extends StatelessWidget {
-  final MovieDetailDto movie;
+  final MovieListDto movie;
   final int rank;
 
   const RankedMovieCard({
@@ -83,18 +80,8 @@ class RankedMovieCard extends StatelessWidget {
                         ),
                         const SizedBox(height: Dimens.standard_4),
                         Text(
-                          '${'rating'.tr}: ${movie.imdbRating}',
+                          '${movie.year} • ${movie.type}',
                           style: AppTextStyles.openSansRegular14,
-                        ),
-                        const SizedBox(height: Dimens.standard_4),
-                        Text(
-                          '${'country_format'.tr}: ${movie.country} / ${movie.type}',
-                          style: AppTextStyles.openSansRegular12,
-                        ),
-                        const SizedBox(height: Dimens.standard_4),
-                        Text(
-                          '${'director'.tr}: ${movie.director}',
-                          style: AppTextStyles.openSansRegular12,
                         ),
                       ],
                     ),

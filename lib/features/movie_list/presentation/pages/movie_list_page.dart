@@ -137,21 +137,12 @@ class _MovieListPageState extends State<MovieListPage> {
         itemCount: moviesToShow.length,
         itemBuilder: (context, index) {
           final movie = moviesToShow[index];
-          final detail = state.movieDetails[movie.imdbID];
-
-          if (detail == null) {
-            _movieListCubit.loadMovieDetail(movie.imdbID); // ✅ preload detail
-            return ListTile(
-              title: Text(movie.title, style: AppTextStyles.openSansRegular16),
-              subtitle: const Text('Loading details...'),
-            );
-          }
 
           return GestureDetector(
             onTap: () {
               context.go('${RoutesName.movieDetail}/${movie.imdbID}');
             },
-            child: RankedMovieCard(movie: detail, rank: index + 1),
+            child: RankedMovieCard(movie: movie, rank: index + 1),
           );
         },
       );

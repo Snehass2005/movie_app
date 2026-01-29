@@ -4,7 +4,6 @@ import 'package:movie_app/core/constants/endpoints.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/core/network/network_service.dart';
-import 'package:movie_app/main/app_env.dart';
 import '../models/movie_list_dto.dart';
 
 /// Contract for movie list remote data source
@@ -28,10 +27,10 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
       }) async {
     try {
       final eitherType = await networkService.get(
-        EnvInfo.baseUrl, // OMDb root endpoint
+        ApiEndpoint.searchMovies,
         queryParameters: {
-          ApiEndpoint.searchParam: query,
-          ApiEndpoint.pageParam: '$page',
+          's': query,
+          'page': '$page',
         },
       );
 
