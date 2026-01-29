@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get/get.dart';
+import 'package:movie_app/core/constants/routes.dart';
 import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
 
 import 'package:movie_app/shared/config/dimens.dart';
@@ -36,10 +37,7 @@ class RankedMovieCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.goNamed(
-          'detail',
-          pathParameters: {'imdbID': movie.imdbID},
-        );
+        context.push('${RoutesName.movieDetail}/${movie.imdbID}');
       },
       child: Stack(
         children: [

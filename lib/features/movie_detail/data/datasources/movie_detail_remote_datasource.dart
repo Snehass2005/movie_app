@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:movie_app/core/constants/endpoints.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/core/network/network_service.dart';
 import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
 import 'package:movie_app/core/network/model/response.dart';
+import 'package:movie_app/main/app_env.dart';
 
 /// Contract for movie detail remote data source
 abstract class MovieDetailRemoteDataSource {
@@ -24,7 +27,7 @@ class MovieDetailRemoteDataSourceImpl implements MovieDetailRemoteDataSource {
   }) async {
     try {
       final eitherType = await networkService.get(
-        '/', // OMDb root endpoint
+        EnvInfo.baseUrl, // OMDb root endpoint
         queryParameters: {
           ApiEndpoint.idParam: imdbID,// OMDb expects "i" for IMDb ID
         },
@@ -33,7 +36,8 @@ class MovieDetailRemoteDataSourceImpl implements MovieDetailRemoteDataSource {
       return eitherType.fold(
             (exception) => Left(exception),
             (response) {
-          final movieDetail = MovieDetailDto.fromJson(response.data);
+              log('MovieDetail Response: ${response.data}');
+              final movieDetail = MovieDetailDto.fromJson(response.data);
           return Right(movieDetail);
         },
       );

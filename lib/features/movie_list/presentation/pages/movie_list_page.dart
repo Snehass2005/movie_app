@@ -149,7 +149,7 @@ class _MovieListPageState extends State<MovieListPage> {
 
           return GestureDetector(
             onTap: () {
-              context.push('${RoutesName.movieDetail}/${detail.imdbID}');
+              context.go('${RoutesName.movieDetail}/${movie.imdbID}');
             },
             child: RankedMovieCard(movie: detail, rank: index + 1),
           );
