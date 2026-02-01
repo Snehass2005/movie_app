@@ -6,6 +6,7 @@ import 'package:movie_app/core/constants/routes.dart';
 import 'package:movie_app/core/dependency_injection/injector.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
 import 'package:movie_app/features/movie_detail/presentation/cubit/movie_detail_cubit.dart';
+import 'package:movie_app/features/movie_detail/presentation/cubit/movie_detail_state.dart'; // ✅ import the unified state
 import 'package:movie_app/features/movie_detail/presentation/widgets/movie_detail_view.dart';
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/app_colors.dart';
@@ -59,14 +60,14 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               padding: const EdgeInsets.all(Dimens.spacing_16),
               child: BlocConsumer<MovieDetailCubit, MovieDetailState>(
                 listener: (context, state) {
-                  if (state is MovieDetailError) {
+                  if (state.isFailure && state.message.isNotEmpty) {
                     _showErrorSnackBar(context, state.message);
                   }
                 },
                 builder: (context, state) {
-                  if (state is MovieDetailLoading) {
+                  if (state.isLoading) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (state is MovieDetailSuccess)  {
+                  } else if (state.isSuccess && state.detail != null) {
                     return Card(
                       elevation: Dimens.elevation_4,
                       shape: RoundedRectangleBorder(
@@ -74,10 +75,10 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(Dimens.spacing_16),
-                        child: MovieDetailView(detail: state.detail),
+                        child: MovieDetailView(detail: state.detail!),
                       ),
                     );
-                  } else if (state is MovieDetailError) {
+                  } else if (state.isFailure) {
                     return Center(
                       child: Text(
                         state.message,

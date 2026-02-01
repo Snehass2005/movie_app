@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
-import 'package:get/get.dart';
 import 'package:movie_app/core/constants/app_constants.dart';
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
-import 'package:movie_app/features/movie_list/domain/entities/movie.dart';
+import 'package:movie_app/features/movie_list/data/models/MovieListDto.dart';
 
 class MovieCard extends StatelessWidget {
-  final Movie movie;
+  final MovieListDto movie;
 
   const MovieCard({super.key, required this.movie});
 
@@ -21,8 +20,8 @@ class MovieCard extends StatelessWidget {
       ),
       child: ListTile(
         leading: CachedNetworkImage(
-          imageUrl: movie.posterUrl.isNotEmpty
-              ? movie.posterUrl
+          imageUrl: movie.poster.isNotEmpty
+              ? movie.poster
               : AppConstants.noPosterUrl,
           width: Dimens.thumbnailSize,
           fit: BoxFit.cover,
@@ -35,7 +34,7 @@ class MovieCard extends StatelessWidget {
           const Icon(Icons.broken_image, size: Dimens.thumbnailSize),
         ),
         title: Text(movie.title, style: AppTextStyles.openSansRegular16),
-        subtitle: Text('${'year'.tr}: ${movie.year}',
+        subtitle: Text('Year: ${movie.year}',
             style: AppTextStyles.openSansRegular14),
         onTap: () {
           context.goNamed(

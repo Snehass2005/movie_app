@@ -1,7 +1,7 @@
 import '../../../../core/exceptions/http_exception.dart';
 import '../../../../core/network/model/either.dart';
 import '../datasources/movie_remote_datasource.dart';
-import '../models/movie_list_dto.dart';
+import '../models/MovieListDto.dart';
 import '../../domain/respositories/movie_list_respository.dart';
 
 /// Implementation of [MovieListRepository] that fetches movies from a remote data source

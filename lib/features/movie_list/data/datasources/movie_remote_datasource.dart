@@ -4,7 +4,7 @@ import 'package:movie_app/core/constants/endpoints.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/core/network/network_service.dart';
-import '../models/movie_list_dto.dart';
+import '../models/MovieListDto.dart';
 
 /// Contract for movie list remote data source
 abstract class MovieRemoteDataSource {

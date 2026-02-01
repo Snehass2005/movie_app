@@ -1,4 +1,4 @@
-import 'package:movie_app/features/movie_list/data/models/movie_list_dto.dart';
+import 'package:movie_app/features/movie_list/data/models/MovieListDto.dart';
 
 import '../../../../core/exceptions/http_exception.dart';
 import '../../../../core/network/model/either.dart';

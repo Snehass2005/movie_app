@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/core/constants/routes.dart';
-import 'package:movie_app/features/movie_list/data/models/movie_list_dto.dart'; // ✅ use MovieListDto
+import 'package:movie_app/features/movie_list/data/models/MovieListDto.dart'; // ✅ use MovieListDto
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/app_colors.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';

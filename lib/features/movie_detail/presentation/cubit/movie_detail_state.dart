@@ -1,34 +1,46 @@
-part of 'movie_detail_cubit.dart';
+import 'package:equatable/equatable.dart';
+import 'package:movie_app/features/movie_detail/data/models/MovieDetailDto.dart';
 
-abstract class MovieDetailState extends Equatable {
-  const MovieDetailState();
 
-  @override
-  List<Object?> get props => [];
-}
-
-class MovieDetailInitial extends MovieDetailState {
-  const MovieDetailInitial();
-}
-
-class MovieDetailLoading extends MovieDetailState {
-  const MovieDetailLoading();
-}
-
-class MovieDetailSuccess extends MovieDetailState {
-  final MovieDetailDto detail;
-
-  const MovieDetailSuccess(this.detail);
-
-  @override
-  List<Object?> get props => [detail];
-}
-
-class MovieDetailError extends MovieDetailState {
+/// MovieDetailState - Holds all the data for the movie detail screen.
+///
+/// Properties:
+/// - message: Error or success message
+/// - isLoading: True when API call is in progress
+/// - isFailure: True when request failed
+/// - isSuccess: True when request succeeded
+/// - detail: The fetched MovieDetailDto (nullable until loaded)
+class MovieDetailState extends Equatable {
   final String message;
+  final bool isLoading;
+  final bool isFailure;
+  final bool isSuccess;
+  final MovieDetailDto? detail;
 
-  const MovieDetailError(this.message);
+  const MovieDetailState({
+    this.message = '',
+    this.isLoading = false,
+    this.isFailure = false,
+    this.isSuccess = false,
+    this.detail,
+  });
+
+  MovieDetailState copyWith({
+    String? message,
+    bool? isLoading,
+    bool? isFailure,
+    bool? isSuccess,
+    MovieDetailDto? detail,
+  }) {
+    return MovieDetailState(
+      message: message ?? this.message,
+      isLoading: isLoading ?? this.isLoading,
+      isFailure: isFailure ?? this.isFailure,
+      isSuccess: isSuccess ?? this.isSuccess,
+      detail: detail ?? this.detail,
+    );
+  }
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, isLoading, isFailure, isSuccess, detail];
 }

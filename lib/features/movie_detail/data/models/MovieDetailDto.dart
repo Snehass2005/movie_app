@@ -1,4 +1,4 @@
-import '../../../../core/constants/app_constants.dart';
+import 'package:movie_app/core/constants/app_constants.dart';
 
 class MovieDetailDto {
   final String imdbID;

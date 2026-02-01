@@ -1,105 +1,116 @@
-import 'package:equatable/equatable.dart';
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_app/core/exceptions/exception_handler_mixin.dart';
-import 'package:movie_app/features/movie_detail/data/models/movie_detail_dto.dart';
+import 'package:movie_app/features/movie_detail/data/models/MovieDetailDto.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
+import 'package:movie_app/features/movie_list/data/models/MovieListDto.dart';
 import 'package:movie_app/features/movie_list/domain/usecases/movie_search_usecases.dart';
-import 'package:movie_app/features/movie_list/data/models/movie_list_dto.dart';
 
-part 'movie_list_state.dart';
+
+import 'movie_list_state.dart';
 
 class MovieListCubit extends Cubit<MovieListState> with ExceptionHandlerMixin {
   final SearchMoviesUseCase searchMoviesUseCase;
   final GetMovieDetailUseCase getMovieDetailUseCase;
 
-  List<MovieListDto> defaultMovies = [];
-  List<MovieListDto> searchedMovies = [];
-
   int defaultPage = 1;
   int searchPage = 1;
-  bool hasMoreDefault = true;
-  bool hasMoreSearch = true;
 
   MovieListCubit(this.searchMoviesUseCase, this.getMovieDetailUseCase)
-      : super(const MovieListInitial());
+      : super(const MovieListState());
 
   /// Load default movies (page 1)
   Future<void> loadMovies({String query = "batman"}) async {
-    emit(const MovieListLoading());
+    emit(state.copyWith(isLoading: true, message: ''));
     defaultPage = 1;
-    defaultMovies.clear();
 
     final result = await searchMoviesUseCase(query: query, page: defaultPage);
 
     result.onLeft((failure) {
-      emit(MovieListError(getErrorMessage(failure)));
+      emit(state.copyWith(
+        message: getErrorMessage(failure),
+        isLoading: false,
+        isFailure: true,
+      ));
     });
 
     result.onRight((movies) {
-      defaultMovies = _dedupe(movies);
-      hasMoreDefault = movies.isNotEmpty;
-      emit(MovieListSuccess(defaultMovies, [], {}));
+      log('Loaded page $defaultPage for query: $query');
+      log('Current defaultMovies length: ${state.defaultMovies.length}');
+
+      emit(state.copyWith(
+        defaultMovies: _dedupe(movies),
+        searchedMovies: [],
+        hasMoreDefault: movies.isNotEmpty,
+        isLoading: false,
+        isSuccess: true,
+      ));
     });
   }
 
   /// Search movies (page 1)
   Future<void> search(String query) async {
-    emit(const MovieListLoading());
+    emit(state.copyWith(isLoading: true, message: ''));
     searchPage = 1;
-    searchedMovies.clear();
 
     final result = await searchMoviesUseCase(query: query, page: searchPage);
 
     result.onLeft((failure) {
-      emit(MovieListError(getErrorMessage(failure)));
+      emit(state.copyWith(
+        message: getErrorMessage(failure),
+        isLoading: false,
+        isFailure: true,
+      ));
     });
 
     result.onRight((movies) {
-      searchedMovies = _dedupe(movies);
-      hasMoreSearch = movies.isNotEmpty;
-      emit(MovieListSuccess([], searchedMovies, {}));
+      emit(state.copyWith(
+        searchedMovies: _dedupe(movies),
+        hasMoreSearch: movies.isNotEmpty,
+        isLoading: false,
+        isSuccess: true,
+      ));
     });
   }
 
   /// Load more default movies
   Future<void> loadMoreMovies(String query) async {
-    if (!hasMoreDefault) return;
+    if (!state.hasMoreDefault) return;
     defaultPage++;
 
     final result = await searchMoviesUseCase(query: query, page: defaultPage);
 
-    result.onLeft((failure) {
-      emit(MovieListError(getErrorMessage(failure)));
-    });
-
     result.onRight((movies) {
       if (movies.isEmpty) {
-        hasMoreDefault = false;
+        emit(state.copyWith(hasMoreDefault: false));
+        log('No more pages left for query: $query');
+
       } else {
-        defaultMovies.addAll(_dedupe(movies));
+        emit(state.copyWith(
+          defaultMovies: _dedupe([...state.defaultMovies, ...movies]),
+          hasMoreDefault: true,
+        ));
       }
-      emit(MovieListSuccess(defaultMovies, [], {}));
     });
   }
 
   /// Load more search results
   Future<void> loadMoreSearch(String query) async {
-    if (!hasMoreSearch) return;
+    if (!state.hasMoreSearch) return;
     searchPage++;
 
     final result = await searchMoviesUseCase(query: query, page: searchPage);
 
-    result.onLeft((failure) {
-      emit(MovieListError(getErrorMessage(failure)));
-    });
-
     result.onRight((movies) {
       if (movies.isEmpty) {
-        hasMoreSearch = false;
+        emit(state.copyWith(hasMoreSearch: false));
       } else {
-        searchedMovies.addAll(_dedupe(movies));
+        emit(state.copyWith(
+          searchedMovies: _dedupe([...state.searchedMovies, ...movies]),
+          hasMoreSearch: true,
+        ));
       }
-      emit(MovieListSuccess([], searchedMovies, {}));
     });
   }
 
@@ -114,26 +125,14 @@ class MovieListCubit extends Cubit<MovieListState> with ExceptionHandlerMixin {
 
   /// Fetch movie detail once and cache it
   Future<void> loadMovieDetail(String imdbID) async {
-    final currentState = state;
-    if (currentState is MovieListSuccess &&
-        currentState.movieDetails.containsKey(imdbID)) return;
+    if (state.movieDetails.containsKey(imdbID)) return;
 
     final result = await getMovieDetailUseCase.getMovieDetail(imdbID: imdbID);
 
-    result.onLeft((failure) {
-      emit(MovieListError(getErrorMessage(failure)));
-    });
-
     result.onRight((detail) {
-      if (currentState is MovieListSuccess) {
-        final updated = Map<String, MovieDetailDto>.from(currentState.movieDetails);
-        updated[imdbID] = detail;
-        emit(MovieListSuccess(
-          currentState.defaultMovies,
-          currentState.searchedMovies,
-          updated,
-        ));
-      }
+      final updated = Map<String, MovieDetailDto>.from(state.movieDetails);
+      updated[imdbID] = detail;
+      emit(state.copyWith(movieDetails: updated));
     });
   }
 }
