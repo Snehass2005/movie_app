@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 import 'package:movie_app/core/constants/app_constants.dart';
-import 'package:movie_app/features/movie_detail/data/models/MovieDetailDto.dart';
+import 'package:movie_app/features/movie_detail/data/models/MovieDetailModel.dart';
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
 
 class MovieDetailView extends StatelessWidget {
-  final MovieDetailDto detail;
+  final MovieDetailModel detail;
 
   const MovieDetailView({super.key, required this.detail});
 

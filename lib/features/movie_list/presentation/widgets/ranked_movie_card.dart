@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/core/constants/routes.dart';
-import 'package:movie_app/features/movie_list/data/models/MovieListDto.dart'; // ✅ use MovieListDto
+import 'package:movie_app/features/movie_list/data/models/MovieListModel.dart'; // ✅ use MovieListDto
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/app_colors.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
 
 class RankedMovieCard extends StatelessWidget {
-  final MovieListDto movie;
+  final MovieListModel movie;
   final int rank;
 
   const RankedMovieCard({

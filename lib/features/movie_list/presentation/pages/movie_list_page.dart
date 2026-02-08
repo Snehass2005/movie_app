@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:movie_app/core/constants/routes.dart';
 import 'package:movie_app/core/dependency_injection/injector.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
@@ -11,7 +10,6 @@ import 'package:movie_app/features/movie_list/presentation/widgets/ranked_movie_
 import 'package:movie_app/shared/theme/app_colors.dart';
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
-
 import '../cubit/movie_list_cubit.dart';
 import '../cubit/movie_list_state.dart';
 
@@ -26,8 +24,10 @@ class _MovieListPageState extends State<MovieListPage> {
   late MovieListCubit _movieListCubit;
   late final ScrollController _scrollController;
   late final TextEditingController searchController;
+  late final TextEditingController yearController;
 
   String currentQuery = "batman";
+  String? currentYear;
   bool isSearchMode = false;
 
   @override
@@ -35,6 +35,7 @@ class _MovieListPageState extends State<MovieListPage> {
     super.initState();
     _scrollController = ScrollController();
     searchController = TextEditingController();
+    yearController = TextEditingController();
 
     final searchMoviesUseCase = injector<SearchMoviesUseCase>();
     final getMovieDetailUseCase = injector<GetMovieDetailUseCase>();
@@ -54,14 +55,16 @@ class _MovieListPageState extends State<MovieListPage> {
   void dispose() {
     _scrollController.dispose();
     searchController.dispose();
+    yearController.dispose();
     _movieListCubit.close();
     super.dispose();
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return BlocProvider<MovieListCubit>(
-      create: (_) => _movieListCubit..loadMovies(query: currentQuery),
+      create: (_) => _movieListCubit..loadMovies(query: currentQuery, year: currentYear),
       child: Scaffold(
         backgroundColor: AppColors.appBackGround,
         appBar: AppBar(
@@ -90,9 +93,11 @@ class _MovieListPageState extends State<MovieListPage> {
                           icon: const Icon(Icons.clear),
                           onPressed: () {
                             searchController.clear();
+                            yearController.clear();
                             currentQuery = "batman";
+                            currentYear = null;
                             isSearchMode = false;
-                            _movieListCubit.loadMovies(query: currentQuery);
+                            _movieListCubit.loadMovies(query: currentQuery, year: currentYear);
                           },
                         ),
                         border: OutlineInputBorder(
@@ -101,10 +106,29 @@ class _MovieListPageState extends State<MovieListPage> {
                       ),
                       onSubmitted: (value) {
                         currentQuery = value.isEmpty ? "batman" : value;
+                        currentYear = yearController.text.isEmpty ? null : yearController.text;
                         isSearchMode = currentQuery != "batman";
                         isSearchMode
-                            ? _movieListCubit.search(currentQuery)
-                            : _movieListCubit.loadMovies(query: currentQuery);
+                            ? _movieListCubit.search(currentQuery, year: currentYear)
+                            : _movieListCubit.loadMovies(query: currentQuery, year: currentYear);
+                      },
+                    ),
+                    const SizedBox(height: Dimens.standard_16),
+                    TextField(
+                      controller: yearController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Enter year (optional)',
+                        prefixIcon: const Icon(Icons.calendar_today),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                      ),
+                      onSubmitted: (_) {
+                        currentYear = yearController.text.isEmpty ? null : yearController.text;
+                        isSearchMode
+                            ? _movieListCubit.search(currentQuery, year: currentYear)
+                            : _movieListCubit.loadMovies(query: currentQuery, year: currentYear);
                       },
                     ),
                     const SizedBox(height: Dimens.standard_16),
@@ -134,17 +158,30 @@ class _MovieListPageState extends State<MovieListPage> {
 
       return ListView.builder(
         controller: _scrollController,
-        itemCount: moviesToShow.length,
+        itemCount: moviesToShow.length + 1, // ✅ add one extra slot
         itemBuilder: (context, index) {
-          final movie = moviesToShow[index];
-          return GestureDetector(
-            onTap: () {
-              context.go('${RoutesName.movieDetail}/${movie.imdbID}');
-            },
-            child: RankedMovieCard(movie: movie, rank: index + 1),
-          );
+          if (index < moviesToShow.length) {
+            final movie = moviesToShow[index];
+            return GestureDetector(
+              onTap: () {
+                context.go('${RoutesName.movieDetail}/${movie.imdbID}');
+              },
+              child: RankedMovieCard(movie: movie, rank: index + 1),
+            );
+          } else {
+            // ✅ Loader at the bottom during pagination
+            if (state.isPaginatingDefault || state.isPaginatingSearch) {
+              return const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            } else {
+              return const SizedBox.shrink(); // nothing if not loading
+            }
+          }
         },
       );
+
     }
     return Center(
       child: Text('Search for a movie', style: AppTextStyles.openSansRegular14),

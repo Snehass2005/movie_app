@@ -4,13 +4,13 @@ import 'package:movie_app/core/constants/endpoints.dart';
 import 'package:movie_app/core/exceptions/http_exception.dart';
 import 'package:movie_app/core/network/model/either.dart';
 import 'package:movie_app/core/network/network_service.dart';
-import 'package:movie_app/features/movie_detail/data/models/MovieDetailDto.dart';
+import 'package:movie_app/features/movie_detail/data/models/MovieDetailModel.dart';
 import 'package:movie_app/core/network/model/response.dart';
 import 'package:movie_app/main/app_env.dart';
 
 /// Contract for movie detail remote data source
 abstract class MovieDetailRemoteDataSource {
-  Future<Either<AppException, MovieDetailDto>> getMovieDetail({
+  Future<Either<AppException, MovieDetailModel>> getMovieDetail({
     required String imdbID,
   });
 }
@@ -22,7 +22,7 @@ class MovieDetailRemoteDataSourceImpl implements MovieDetailRemoteDataSource {
   MovieDetailRemoteDataSourceImpl(this.networkService);
 
   @override
-  Future<Either<AppException, MovieDetailDto>> getMovieDetail({
+  Future<Either<AppException, MovieDetailModel>> getMovieDetail({
     required String imdbID,
   }) async {
       try {
@@ -37,7 +37,7 @@ class MovieDetailRemoteDataSourceImpl implements MovieDetailRemoteDataSource {
             (exception) => Left(exception),
             (response) {
               log('MovieDetail Response: ${response.data}');
-              final movieDetail = MovieDetailDto.fromJson(response.data);
+              final movieDetail = MovieDetailModel.fromJson(response.data);
           return Right(movieDetail);
         },
       );

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:movie_app/features/movie_detail/data/models/MovieDetailDto.dart';
+import 'package:movie_app/features/movie_detail/data/models/MovieDetailModel.dart';
 
 
 /// MovieDetailState - Holds all the data for the movie detail screen.
@@ -15,7 +15,7 @@ class MovieDetailState extends Equatable {
   final bool isLoading;
   final bool isFailure;
   final bool isSuccess;
-  final MovieDetailDto? detail;
+  final MovieDetailModel? detail;
 
   const MovieDetailState({
     this.message = '',
@@ -30,7 +30,7 @@ class MovieDetailState extends Equatable {
     bool? isLoading,
     bool? isFailure,
     bool? isSuccess,
-    MovieDetailDto? detail,
+    MovieDetailModel? detail,
   }) {
     return MovieDetailState(
       message: message ?? this.message,

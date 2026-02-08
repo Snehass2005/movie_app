@@ -1,6 +1,6 @@
 import 'package:movie_app/core/constants/app_constants.dart';
 
-class MovieDetailDto {
+class MovieDetailModel {
   final String imdbID;
   final String title;
   final String year;
@@ -19,7 +19,7 @@ class MovieDetailDto {
   final String imdbRating;
   final String type;
 
-  const MovieDetailDto({
+  const MovieDetailModel({
     required this.imdbID,
     required this.title,
     required this.year,
@@ -39,12 +39,12 @@ class MovieDetailDto {
     required this.type,
   });
 
-  factory MovieDetailDto.fromJson(Map<String, dynamic> json) {
+  factory MovieDetailModel.fromJson(Map<String, dynamic> json) {
     final posterUrl = (json['Poster'] == null || json['Poster'] == 'N/A')
         ? AppConstants.noPosterUrl
         : json['Poster'];
 
-    return MovieDetailDto(
+    return MovieDetailModel(
       imdbID: json['imdbID'] ?? '',
       title: json['Title'] ?? '',
       year: json['Year'] ?? '',

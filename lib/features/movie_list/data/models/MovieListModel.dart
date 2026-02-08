@@ -1,11 +1,11 @@
-class MovieListDto {
+class MovieListModel {
   final String imdbID;
   final String title;
   final String year;
   final String type;
   final String poster;
 
-  const MovieListDto({
+  const MovieListModel({
     required this.imdbID,
     required this.title,
     required this.year,
@@ -13,8 +13,8 @@ class MovieListDto {
     required this.poster,
   });
 
-  factory MovieListDto.fromJson(Map<String, dynamic> json) {
-    return MovieListDto(
+  factory MovieListModel.fromJson(Map<String, dynamic> json) {
+    return MovieListModel(
       imdbID: json['imdbID'] ?? '',
       title: json['Title'] ?? '',
       year: json['Year'] ?? '',

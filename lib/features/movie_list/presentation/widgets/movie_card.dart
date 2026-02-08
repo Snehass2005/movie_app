@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:movie_app/core/constants/app_constants.dart';
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
-import 'package:movie_app/features/movie_list/data/models/MovieListDto.dart';
+import 'package:movie_app/features/movie_list/data/models/MovieListModel.dart';
 
 class MovieCard extends StatelessWidget {
-  final MovieListDto movie;
+  final MovieListModel movie;
 
   const MovieCard({super.key, required this.movie});
 

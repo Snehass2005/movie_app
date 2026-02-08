@@ -6,8 +6,15 @@ import 'package:movie_app/core/constants/routes.dart';
 import 'package:movie_app/core/dependency_injection/injector.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
 import 'package:movie_app/features/movie_detail/presentation/cubit/movie_detail_cubit.dart';
-import 'package:movie_app/features/movie_detail/presentation/cubit/movie_detail_state.dart'; // ✅ import the unified state
+import 'package:movie_app/features/movie_detail/presentation/cubit/movie_detail_state.dart';
 import 'package:movie_app/features/movie_detail/presentation/widgets/movie_detail_view.dart';
+import 'package:movie_app/features/wishlist/data/datasources/wishlist_local_datasource.dart';
+import 'package:movie_app/features/wishlist/data/models/wishlist_item_dto.dart';
+import 'package:movie_app/features/wishlist/data/respositories/wishlist_respository_impl.dart';
+import 'package:movie_app/features/wishlist/domain/usecases/wishlist_usecases.dart';
+import 'package:movie_app/features/wishlist/presentation/cubit/wishlist_cubit.dart';
+import 'package:movie_app/features/wishlist/presentation/cubit/wishlist_state.dart';
+import 'package:movie_app/features/wishlist/presentation/pages/wishlist_page.dart';
 import 'package:movie_app/shared/config/dimens.dart';
 import 'package:movie_app/shared/theme/app_colors.dart';
 import 'package:movie_app/shared/theme/text_styles.dart';
@@ -40,19 +47,74 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MovieDetailCubit>(
-      create: (_) => _movieDetailCubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<MovieDetailCubit>(
+          create: (_) => _movieDetailCubit,
+        ),
+        BlocProvider<WishlistCubit>(
+          create: (_) {
+            final repository = WishlistRepositoryImpl(WishlistLocalDataSource());
+            final usecase = WishlistUseCase(repository);
+            return WishlistCubit(usecase, repository)..loadWishlist();
+          },
+        ),
+
+      ],
       child: Scaffold(
         backgroundColor: AppColors.colorSecondary,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go(RoutesName.defaultPath),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop(); // ✅ pop if stack exists
+              } else {
+                context.go(RoutesName.defaultPath); // ✅ fallback to home
+              }
+            },
           ),
           title: Text('Movie Detail', style: AppTextStyles.openSansBold20),
           centerTitle: true,
           backgroundColor: AppColors.colorSecondary,
           elevation: Dimens.elevation_2,
+          actions: [
+            BlocBuilder<WishlistCubit, WishlistState>(
+              builder: (context, state) {
+                final isInWishlist = state.items.any((item) => item.imdbID == widget.imdbID);
+                return IconButton(
+                  icon: Icon(
+                    isInWishlist ? Icons.favorite : Icons.favorite_border,
+                    color: Colors.red,
+                  ),
+                  onPressed: () {
+                    final detailState = context.read<MovieDetailCubit>().state;
+                    if (detailState.detail != null) {
+                      final item = WishlistItemDto(
+                        imdbID: detailState.detail!.imdbID,
+                        title: detailState.detail!.title,
+                        poster: detailState.detail!.poster,
+                      );
+                      context.read<WishlistCubit>().toggleWishlist(item);
+                    }
+                  },
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.list_alt), // or Icons.favorite for consistency
+              tooltip: 'Wishlist',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const WishlistPage(),
+                  ),
+                );
+              },
+            ),
+
+          ],
         ),
         body: SafeArea(
           child: SingleChildScrollView(

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:movie_app/core/constants/routes.dart';
 import 'package:movie_app/features/movie_list/presentation/pages/movie_list_page.dart';
 import 'package:movie_app/features/movie_detail/presentation/pages/movie_detail_page.dart';
+import 'package:movie_app/features/wishlist/presentation/pages/wishlist_page.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -25,6 +26,11 @@ final GoRouter router = GoRouter(
         final imdbID = state.pathParameters['imdbID']!;
         return MovieDetailPage(imdbID: imdbID); // ✅ passes imdbID
       },
+    ),
+    GoRoute(
+      path: RoutesName.wishlist, // '/wishlist'
+      name: 'wishlist',
+      builder: (context, state) => WishlistPage(),
     ),
   ],
 );

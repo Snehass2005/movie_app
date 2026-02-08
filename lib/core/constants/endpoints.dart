@@ -12,5 +12,6 @@ class ApiEndpoint {
   /// Query parameter keys
   static const String searchParam = 's';       // search term
   static const String pageParam = 'page';      // pagination
-  static const String idParam = 'i';           // imdbID for detail
+  static const String idParam = 'i';// imdbID for detail
+  static const String yearParam = 'y';
 }
