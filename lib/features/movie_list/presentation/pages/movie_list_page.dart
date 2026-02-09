@@ -118,7 +118,7 @@ class _MovieListPageState extends State<MovieListPage> {
                       controller: yearController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        hintText: 'Enter year (optional)',
+                        hintText: 'Enter year',
                         prefixIcon: const Icon(Icons.calendar_today),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.0),

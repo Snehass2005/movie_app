@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:movie_app/core/constants/routes.dart';
 import 'package:movie_app/core/dependency_injection/injector.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
@@ -9,7 +10,7 @@ import 'package:movie_app/features/movie_detail/presentation/cubit/movie_detail_
 import 'package:movie_app/features/movie_detail/presentation/cubit/movie_detail_state.dart';
 import 'package:movie_app/features/movie_detail/presentation/widgets/movie_detail_view.dart';
 import 'package:movie_app/features/wishlist/data/datasources/wishlist_local_datasource.dart';
-import 'package:movie_app/features/wishlist/data/models/wishlist_item_dto.dart';
+import 'package:movie_app/features/wishlist/data/models/wishlist_item_model.dart';
 import 'package:movie_app/features/wishlist/data/respositories/wishlist_respository_impl.dart';
 import 'package:movie_app/features/wishlist/domain/usecases/wishlist_usecases.dart';
 import 'package:movie_app/features/wishlist/presentation/cubit/wishlist_cubit.dart';
@@ -54,12 +55,11 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         ),
         BlocProvider<WishlistCubit>(
           create: (_) {
-            final repository = WishlistRepositoryImpl(WishlistLocalDataSource());
-            final usecase = WishlistUseCase(repository);
-            return WishlistCubit(usecase, repository)..loadWishlist();
+            final repository = WishlistRepositoryImpl(WishlistLocalDataSourceImpl());
+            final usecases = WishlistUseCases(repository); // ✅ concrete class
+            return WishlistCubit(usecases)..loadWishlist(); // ✅ only one argument
           },
         ),
-
       ],
       child: Scaffold(
         backgroundColor: AppColors.colorSecondary,
@@ -81,7 +81,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           actions: [
             BlocBuilder<WishlistCubit, WishlistState>(
               builder: (context, state) {
-                final isInWishlist = state.items.any((item) => item.imdbID == widget.imdbID);
+                final isInWishlist =
+                state.items.any((item) => item.imdbID == widget.imdbID);
                 return IconButton(
                   icon: Icon(
                     isInWishlist ? Icons.favorite : Icons.favorite_border,
@@ -90,7 +91,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   onPressed: () {
                     final detailState = context.read<MovieDetailCubit>().state;
                     if (detailState.detail != null) {
-                      final item = WishlistItemDto(
+                      final item = WishlistItemModel( // ✅ use Model instead of DTO
                         imdbID: detailState.detail!.imdbID,
                         title: detailState.detail!.title,
                         poster: detailState.detail!.poster,
@@ -102,7 +103,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.list_alt), // or Icons.favorite for consistency
+              icon: const Icon(Icons.list_alt),
               tooltip: 'Wishlist',
               onPressed: () {
                 Navigator.push(
@@ -113,7 +114,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                 );
               },
             ),
-
           ],
         ),
         body: SafeArea(

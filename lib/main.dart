@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:movie_app/features/wishlist/data/models/wishlist_item_dto.dart';
+import 'package:movie_app/features/wishlist/data/models/wishlist_item_model.dart';
 import 'core/constants/app_language.dart';
 import 'core/dependency_injection/injector.dart';
 import 'main/app.dart';
@@ -27,13 +27,13 @@ Future<void> mainCommon(AppEnvironment environment) async {
 
   // ✅ Hive setup
   await Hive.initFlutter();
-  Hive.registerAdapter(WishlistItemDtoAdapter());
+  Hive.registerAdapter(WishlistItemModelAdapter());
 
   // ⚠️ Clear old box data once if corrupted
   await Hive.deleteBoxFromDisk('wishlist');
 
   // ✅ Open typed box
-  await Hive.openBox<WishlistItemDto>('wishlist');
+  await Hive.openBox<WishlistItemModel>('wishlist');
 
   // Load translations for the app
   final Map<String, Map<String, String>> translations = await loadTranslations();

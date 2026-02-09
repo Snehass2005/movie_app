@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-
 import 'package:movie_app/core/network/network_service.dart';
 import 'package:movie_app/core/network/dio_network_service.dart';
 
@@ -15,9 +14,10 @@ import 'package:movie_app/features/movie_detail/data/respositories/movie_detail_
 import 'package:movie_app/features/movie_detail/domain/respositories/movie_detail_respository.dart';
 import 'package:movie_app/features/movie_detail/domain/usecases/get_movie_detail_usecases.dart';
 
-
-// Environment
-import 'package:movie_app/main/app_env.dart';
+// Wishlist
+import 'package:movie_app/features/wishlist/data/datasources/wishlist_local_datasource.dart';
+import 'package:movie_app/features/wishlist/data/respositories/wishlist_respository_impl.dart';
+import 'package:movie_app/features/wishlist/domain/usecases/wishlist_usecases.dart';
 
 final injector = GetIt.instance;
 
@@ -28,12 +28,15 @@ Future<void> initDependencies() async {
           () => DioNetworkService(),
     )
 
-  // Data sources (inject EnvInfo.baseUrl and EnvInfo.apiKey here)
+  // Data sources
     ..registerLazySingleton<MovieRemoteDataSource>(
           () => MovieRemoteDataSourceImpl(injector<NetworkService>()),
     )
     ..registerLazySingleton<MovieDetailRemoteDataSource>(
           () => MovieDetailRemoteDataSourceImpl(injector<NetworkService>()),
+    )
+    ..registerLazySingleton<WishlistLocalDataSource>(
+          () => WishlistLocalDataSourceImpl(), // ✅ concrete class
     )
 
   // Repositories
@@ -43,6 +46,9 @@ Future<void> initDependencies() async {
     ..registerLazySingleton<MovieDetailRepository>(
           () => MovieDetailRepositoryImpl(injector<MovieDetailRemoteDataSource>()),
     )
+    ..registerLazySingleton<WishlistRepositoryImpl>(
+          () => WishlistRepositoryImpl(injector<WishlistLocalDataSource>()),
+    )
 
   // Use cases
     ..registerLazySingleton<SearchMoviesUseCase>(
@@ -50,5 +56,8 @@ Future<void> initDependencies() async {
     )
     ..registerLazySingleton<GetMovieDetailUseCase>(
           () => GetMovieDetailUseCase(injector<MovieDetailRepository>()),
+    )
+    ..registerLazySingleton<WishlistUseCases>(
+          () => WishlistUseCases(injector<WishlistRepositoryImpl>()), // ✅ registered
     );
 }

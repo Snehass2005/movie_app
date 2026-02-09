@@ -1,30 +1,48 @@
 import 'package:hive/hive.dart';
-import '../models/wishlist_item_dto.dart';
+import 'package:movie_app/core/exceptions/http_exception.dart';
+import 'package:movie_app/core/network/model/either.dart';
+import '../models/wishlist_item_model.dart';
 
-class WishlistLocalDataSource {
+abstract class WishlistLocalDataSource {
+  Future<Either<AppException, List<WishlistItemModel>>> getWishlist();
+  Future<Either<AppException, bool>> toggleWishlist(WishlistItemModel item);
+}
+
+class WishlistLocalDataSourceImpl implements WishlistLocalDataSource {
   static const String boxName = 'wishlist';
 
-  /// Ensure the box is opened before use
-  Future<Box<WishlistItemDto>> _openBox() async {
+  Future<Box<WishlistItemModel>> _openBox() async {
     if (!Hive.isBoxOpen(boxName)) {
-      return await Hive.openBox<WishlistItemDto>(boxName);
+      return await Hive.openBox<WishlistItemModel>(boxName);
     }
-    return Hive.box<WishlistItemDto>(boxName);
+    return Hive.box<WishlistItemModel>(boxName);
   }
 
-  /// Get all wishlist items
-  Future<List<WishlistItemDto>> getWishlist() async {
-    final box = await _openBox();
-    return box.values.toList();
+  @override
+  Future<Either<AppException, List<WishlistItemModel>>> getWishlist() async {
+    try {
+      final box = await _openBox();
+      return Right(box.values.toList());
+    } catch (e) {
+      print('WishlistLocalDataSource.getWishlist error: $e');
+      return Left(AppException.network(e.toString()));
+    }
   }
 
-  /// Toggle wishlist item (add/remove)
-  Future<void> toggleWishlist(WishlistItemDto item) async {
-    final box = await _openBox();
-    if (box.containsKey(item.imdbID)) {
-      await box.delete(item.imdbID);
-    } else {
-      await box.put(item.imdbID, item);
+  @override
+  Future<Either<AppException, bool>> toggleWishlist(WishlistItemModel item) async {
+    try {
+      final box = await _openBox();
+      if (box.containsKey(item.imdbID)) {
+        await box.delete(item.imdbID);
+        return Right(false); // removed
+      } else {
+        await box.put(item.imdbID, item);
+        return Right(true); // added
+      }
+    } catch (e) {
+      print('WishlistLocalDataSource.toggleWishlist error: $e');
+      return Left(AppException.network(e.toString()));
     }
   }
 }
